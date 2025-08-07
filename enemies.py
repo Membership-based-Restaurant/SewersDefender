@@ -87,7 +87,6 @@ class Enemy:
         self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
         # attack
         self.damage = EM_DAMAGE_D  # example
-        self.damageType = PHIYICS  # example
 
     def en_move(self, temptSpeed=0):
         # move the enemy
@@ -140,7 +139,6 @@ class TestEnemy(Enemy):
         self.hitbox = self.img.get_rect().inflate(-10, -10)
         # attack
         self.damage = EM_DAMAGE_D
-        self.damageType = PHIYICS
 
 
 class CommonEnemy(Enemy):

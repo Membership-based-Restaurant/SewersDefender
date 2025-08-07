@@ -3,7 +3,7 @@ import entities
 import friends
 from math import dist
 from constants import *
-
+from numpy import arctan2
 towerUpgradeIndex = {TO_BASE: [TO_TEST, TO_CANNON, TO_ARCHER, TO_WIZARD]}
 
 
@@ -23,7 +23,7 @@ class ToManager:
         if type == TO_ARCHER:
             self.towerList.append(ArcherTower(pos, self.game))
         if type == TO_CANNON:
-            self.towerList.append(GunTower(pos, self.game))
+            self.towerList.append(CannonTower(pos, self.game))
         if type == TO_WIZARD:
             self.towerList.append(WizardTower(pos, self.game))
         # test
@@ -59,15 +59,13 @@ class ToManager:
             for num in range(len(towerUpgradeIndex[self.selectedTower.towerType])):
                 self.operateButtonManager.buttonList.append(entities.UpgradeButton(self.game,
                                                                                    self.selectedTower,
-                                                                                   num
-                                                                                   ))
-        self.operateButtonManager.buttonList.append(
-            entities.TowerDeleteButton(self.game, self.selectedTower))
+                                                                                   num))
+        if self.selectedTower.towerType != TO_BASE:
+            self.operateButtonManager.buttonList.append(
+                entities.TowerDeleteButton(self.game, self.selectedTower))
 
     def delete_tower(self, tower):
         tower.ifSelected = False
-        if tower.towerType == TO_BASE:
-            return
         tower.ifWorking = False
         tower.to_reset()
         basePos = tower.pos
@@ -75,6 +73,7 @@ class ToManager:
             if t.towerType == TO_BASE and t.hitbox.collidepoint(basePos):
                 t.ifWorking = True
                 t.ifSelected = True
+                self.selectedTower = t
 
     def upgrade_tower(self, tower, num: int):
         tower.ifSelected = False
@@ -140,14 +139,16 @@ class Tower:
         # upgrade
         self.ifUpgradeable = self.towerType in towerUpgradeIndex
 
-    def to_set(self):  # example
-        self.img = self.game.res.get_img(TO_TEST)  # example
-        self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
+    def to_set(self):
+        # basic data
         self.prepInterval = TO_INTERVAL_D  # example
         self.ammo = None  # example
         self.searchRange = TO_RANGE_D  # example
-        self.towerType = TO_TEST  # example
         self.accuracy = 1  # example
+        self.towerType = TO_TEST  # example
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
 
     def to_prepare(self):
         if not self.ifReady:
@@ -167,7 +168,15 @@ class Tower:
                                self.pos, self.searchRange, 1)
 
     def to_attack(self):
-        pass
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_ARROW)
+        destLoc = self.target.location+time
+        if destLoc > len(routeIndex):
+            destLoc = len(routeIndex)
+        self.game.ammoManager.create_ammo(
+            self.pos, routeIndex[destLoc], self.ammo)
+        self.ifReady = False
 
     def to_search(self, enemyList):
         self.ifFoundTarget = False
@@ -196,15 +205,14 @@ class Tower:
 
 class Base(Tower):
     def to_set(self):
-        # img
-        self.img = self.game.res.get_img(TO_BASE)
         # basic data
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
-        # attack and search
         self.prepInterval = TO_INTERVAL_D
         self.ammo = None
         self.towerType = TO_BASE
         self.searchRange = 0
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
 
     def to_search(self):
         pass
@@ -215,37 +223,51 @@ class Base(Tower):
 
 class TestTower(Tower):
     def to_set(self):
-        # img
-        self.img = self.game.res.get_img(TO_TEST)
         # attack
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
         self.prepInterval = TO_INTERVAL_D
         self.ammo = AM_ARROW
-        self.searchRange = TO_RANGE_D+100
+        self.searchRange = TO_RANGE_D
         self.accuracy = 1
         self.towerType = TO_TEST
-
-    def to_attack(self):
-        routeIndex = self.target.routeIndex
-        time = round(
-            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_ARROW)
-        destLoc = self.target.location+time
-        if destLoc > len(routeIndex):
-            destLoc = len(routeIndex)
-        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc])
-        self.ifReady = False
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
 
 
 class ArcherTower(Tower):
-    def to_set(self, game):
-        pass
+    def to_set(self):
+        # attack
+        self.prepInterval = TO_INTERVAL_ARCHER
+        self.ammo = AM_ARROW
+        self.searchRange = TO_RANGE_ARCHER
+        self.accuracy = 1
+        self.towerType = TO_ARCHER
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
 
 
-class GunTower(Tower):
-    def to_set(self, game):
-        pass
+class CannonTower(Tower):
+    def to_set(self):
+        # attack
+        self.prepInterval = TO_INTERVAL_CANNON
+        self.ammo = AM_CANNONBALL
+        self.searchRange = TO_RANGE_CANNON
+        self.accuracy = 1
+        self.towerType = TO_CANNON
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
 
 
 class WizardTower(Tower):
-    def to_set(self, game):
-        pass
+    def to_set(self):
+        # attack
+        self.prepInterval = TO_INTERVAL_WIZARD
+        self.ammo = AM_BEAM
+        self.searchRange = TO_RANGE_WIZARD
+        self.accuracy = 1
+        self.towerType = TO_WIZARD
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-5, -5)

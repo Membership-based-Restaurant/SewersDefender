@@ -1,5 +1,4 @@
 import pygame
-import entities
 from constants import *
 from numpy import arctan2
 from numpy import pi
@@ -11,34 +10,20 @@ class AmManage():
         self.game = game
         self.ammoList = []
 
-    def create_ammo(self, startPos: tuple, targetPos: tuple, type=AM_ARROW,):
+    def create_ammo(self, startPos: tuple, targetPos: tuple, type=AM_ARROW):
         if type == AM_ARROW:
             self.ammoList.append(Arrow(startPos, targetPos, self.game))
+        if type == AM_BEAM:
+            self.ammoList.append(Beam(startPos, targetPos, self.game))
+        if type == AM_CANNONBALL:
+            self.ammoList.append(Cannonball(startPos, targetPos, self.game))
 
     def manage_am_list(self):
         temptList = []
         for ammo in self.ammoList:
             if dist(ammo.pos, ammo.targetPos) < ammo.speed:
                 # print('hit')
-                for enemy in self.game.enemyManager.enemyList:
-                    if enemy.hitbox.collidepoint(ammo.targetPos):
-                        damage = 0
-                        if ammo.damageType == MAGIC:
-                            if ammo.damage > enemy.magicalDefence:
-                                damage = ammo.damage-enemy.magicalDefence
-                            else:
-                                pass
-                        elif ammo.damageType == PHIYICS:
-                            if ammo.damage > enemy.physicalDefence:
-                                damage = ammo.damage-enemy.physicalDefence
-                            else:
-                                pass
-                        enemy.hp -= damage
-                        self.game.messageManager.create_message(f'-{str(damage)}',
-                                                                (enemy.pos[0]+enemy.speed,
-                                                                 enemy.img_rect.top),
-                                                                damage)
-                        break
+                ammo.am_conclude()
             else:
                 ammo.am_move()
                 temptList.append(ammo)
@@ -66,10 +51,9 @@ class Ammo():
         self.am_set_angel()
 
     def am_set(self):
-        self.img = self.game.res.get_img(AM_ARROW)  # e
-        self.damage = AM_DAMAGE_D  # e
-        self.damageType = PHIYICS  # e
-        self.speed = AM_SPEED_D  # e
+        self.img = self.game.res.get_img(AM_ARROW)  # example
+        self.damage = AM_DAMAGE_D  # example
+        self.speed = AM_SPEED_D  # example
 
     def am_set_angel(self):
         x = [self.targetPos[0]-self.pos[0]]
@@ -82,6 +66,21 @@ class Ammo():
         y = self.pos[1]+sin(self.angel)*self.speed
         self.pos = (x, y)
 
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if enemy.hitbox.collidepoint(self.targetPos):
+                damage = 0
+                if self.damage > enemy.physicalDefence:
+                    damage = self.damage-enemy.physicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                self.game.messageManager.create_message(f'-{str(damage)}',
+                                                        (enemy.pos[0]+enemy.speed,
+                                                         enemy.img_rect.top),
+                                                        damage)
+                break
+
     def am_blit(self):
         rotatedImg = pygame.transform.rotate(self.img, -self.angel/pi*180)
         rotatedImg_rect = rotatedImg.get_rect()
@@ -93,5 +92,47 @@ class Arrow(Ammo):
     def am_set(self):
         self.img = self.game.res.get_img(AM_ARROW)
         self.damage = AM_DAMAGE_ARROW
-        self.damageType = PHIYICS
         self.speed = AM_SPEED_ARROW
+
+
+class Beam(Ammo):
+    def am_set(self):
+        self.img = self.game.res.get_img(AM_BEAM)
+        self.damage = AM_DAMAGE_BEAM
+        self.speed = AM_SPEED_BEAM
+
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if enemy.hitbox.collidepoint(self.targetPos):
+                damage = 0
+                if self.damage > enemy.magicalDefence:
+                    damage = self.damage-enemy.magicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                self.game.messageManager.create_message(f'-{str(damage)}',
+                                                        (enemy.pos[0]+enemy.speed,
+                                                         enemy.img_rect.top),
+                                                        damage)
+                break
+
+
+class Cannonball(Ammo):
+    def am_set(self):
+        self.img = self.game.res.get_img(AM_CANNONBALL)
+        self.damage = AM_DAMAGE_CANNONBALL
+        self.speed = AM_SPEED_CANNONBALL
+
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if dist(enemy.pos, self.targetPos) < AM_RANGE_CANNONBALL:
+                damage = 0
+                if self.damage > enemy.physicalDefence:
+                    damage = self.damage-enemy.physicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                self.game.messageManager.create_message(f'-{str(damage)}',
+                                                        (enemy.pos[0]+enemy.speed,
+                                                         enemy.img_rect.top),
+                                                        damage)
