@@ -108,6 +108,7 @@ class ToManager:
         self.towerList.clear()
 
     def quit_operatingmode(self):
+        self.operateButtonManager.clear_bu_list()
         self.selectedTower.ifSelected = False
         self.ifOperating = False
         self.selectedTower = None

@@ -42,13 +42,13 @@ class Game:
                 self.execute_task()
             self.update_entities()
             self.update_screen()
-            '''flag=self.judge_game()
+            flag = self.judge_game()
             if flag == WIN:
                 print('Win')
             elif flag == LOSE:
                 print('Lose')
             else:
-                pass'''
+                pass
             endTime = time.time()
             runTime = endTime-startTime
             if runTime < 1/60:

@@ -157,7 +157,6 @@ class BuManager():
     def check_bu_list(self, pos: tuple):
         for button in self.buttonList:
             if button.bu_check(pos):
-                print('get')
                 button.bu_work()
                 return True
         return False
