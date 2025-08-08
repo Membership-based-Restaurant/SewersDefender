@@ -76,7 +76,7 @@ class Enemy:
         self.hitbox.center = self.img_rect.center
         self.c_hp = self.hp
 
-    def en_set(self, game):  # example
+    def en_set(self, game):
         # img
         self.img = game.res.get_img(EM_TEST)  # example
         # basic data
@@ -142,15 +142,42 @@ class TestEnemy(Enemy):
 
 
 class CommonEnemy(Enemy):
-    def __init__(self, game, enemyNum, routeNum):
-        pass
+    def en_set(self, game):
+        # img
+        self.img = game.res.get_img(EM_COMMON)
+        # basic data
+        self.speed = EM_SPEED_COMMON
+        self.hp = EM_HP_COMMON
+        self.physicalDefence = EM_P_DEFENCE_COMMON
+        self.magicalDefence = EM_M_DEFENCE_COMMON
+        self.hitbox = self.img.get_rect().inflate(-10, -10)
+        # attack
+        self.damage = EM_DAMAGE_COMMON
 
 
 class ArmoredEnemy(Enemy):
-    def __init__(self, game, enemyNum, routeNum):
-        pass
+    def en_set(self, game):
+        # img
+        self.img = game.res.get_img(EM_ARMORED)
+        # basic data
+        self.speed = EM_SPEED_ARMORED
+        self.hp = EM_HP_ARMORED
+        self.physicalDefence = EM_P_DEFENCE_ARMORED
+        self.magicalDefence = EM_M_DEFENCE_ARMORED
+        self.hitbox = self.img.get_rect().inflate(-10, -10)
+        # attack
+        self.damage = EM_DAMAGE_ARMORED
 
 
 class RapidEnemy(Enemy):
-    def __init__(self, game, enemyNum, routeNum):
-        pass
+    def en_set(self, game):
+        # img
+        self.img = game.res.get_img(EM_RAPID)
+        # basic data
+        self.speed = EM_SPEED_RSPID
+        self.hp = EM_HP_RAPID
+        self.physicalDefence = EM_P_DEFENCE_RAPID
+        self.magicalDefence = EM_M_DEFENCE_RAPID
+        self.hitbox = self.img.get_rect().inflate(-10, -10)
+        # attack
+        self.damage = EM_DAMAGE_RAPID

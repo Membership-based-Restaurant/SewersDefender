@@ -135,7 +135,8 @@ class Tower:
         self.to_set()
         self.img_rect = self.img.get_rect()
         self.img_rect.center = self.pos
-        self.hitbox.center = self.pos
+        self.hitbox.center = (
+            self.pos[0], self.pos[1]-int(0.15*self.img_rect.height))
         # upgrade
         self.ifUpgradeable = self.towerType in towerUpgradeIndex
 
@@ -148,7 +149,7 @@ class Tower:
         self.towerType = TO_TEST  # example
         # img
         self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
+        self.hitbox = self.img.get_rect().inflate(-5, -20)  # example
 
     def to_prepare(self):
         if not self.ifReady:
@@ -212,7 +213,7 @@ class Base(Tower):
         self.searchRange = 0
         # img
         self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
 
     def to_search(self):
         pass
@@ -244,7 +245,7 @@ class ArcherTower(Tower):
         self.towerType = TO_ARCHER
         # img
         self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
+        self.hitbox = self.img.get_rect().inflate(-0, -30)
 
 
 class CannonTower(Tower):
@@ -257,7 +258,7 @@ class CannonTower(Tower):
         self.towerType = TO_CANNON
         # img
         self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
 
 
 class WizardTower(Tower):
@@ -270,4 +271,4 @@ class WizardTower(Tower):
         self.towerType = TO_WIZARD
         # img
         self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(-5, -5)
+        self.hitbox = self.img.get_rect().inflate(0, -30)

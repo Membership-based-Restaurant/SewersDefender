@@ -13,11 +13,11 @@ taskType = [SUMMON_TE,
 
 
 class Map:
-    def __init__(self, game, path='maps/map_test.json'):
+    def __init__(self, game, path='game_maps/map1/'):
         # load
         mapInfoDict = []  # all information of the map
         try:
-            with open(path, 'r', encoding='utf=8') as f:
+            with open(f'{path}map.json', 'r', encoding='utf=8') as f:
                 mapInfoDict = json.load(f)
         except FileNotFoundError:
             print('Map1:cannot find the file')
@@ -31,13 +31,12 @@ class Map:
         for pos in finishPosList:
             self.finishManager.create_finish(pos)
         self.towerBaseList = mapInfoDict['towerBaseList']
-        self.numEnemies = mapInfoDict['numEnemies']  # num of enemies
         self.numWaves = len(self.mapTaskList)  # num of waves
         self.numRoutes = len(self.routeIndex)  # num of routes
         # img
         self.screen = game.screen
         self.screen_rect = self.screen.get_rect()
-        bkPath = mapInfoDict['bkPath']  # the path of bkimg
+        bkPath = f'{path}bk.png'
         self.img = pygame.image.load(bkPath).convert_alpha()
         # variable
         self.mapWaveList = []

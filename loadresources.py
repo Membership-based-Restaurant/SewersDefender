@@ -8,9 +8,12 @@ class ImgRes():
         # game
         self.icon = pygame.image.load("resources/icon.png").convert_alpha()
         # enemy
-        self.AEimg = pygame.image.load("resources/ae.png").convert_alpha()
-        self.CEimg = pygame.image.load("resources/ce.png").convert_alpha()
-        self.REimg = pygame.image.load("resources/re.png").convert_alpha()
+        self.AEimg = pygame.image.load(
+            "resources/armoredEnemy.png").convert_alpha()
+        self.CEimg = pygame.image.load(
+            "resources/commonEnemy.png").convert_alpha()
+        self.REimg = pygame.image.load(
+            "resources/rapidEnemy.png").convert_alpha()
         # tower
         self.ATimg = pygame.image.load(
             "resources/archerTower.png").convert_alpha()
@@ -25,7 +28,8 @@ class ImgRes():
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
         # entity
         self.FETimg = pygame.image.load("resources/finish.png").convert_alpha()
-        self.DETimg = pygame.image.load("resources/delete.png").convert_alpha()
+        self.DBUimg = pygame.image.load("resources/delete.png").convert_alpha()
+
         # ammo
         self.AAMimg = pygame.image.load("resources/arrow.png")
         self.BAMimg = pygame.image.load("resources/beam.png")
@@ -43,12 +47,11 @@ class ImgRes():
                         TO_BASE: self.BTimg,
 
                         ET_FINISH: self.FETimg,
-                        BU_TO_DELETE: self.DETimg,
+                        BU_TO_DELETE: self.DBUimg,
 
                         AM_ARROW: self.AAMimg,
                         AM_BEAM: self.BAMimg,
-                        AM_CANNONBALL: self.CAMimg
-
+                        AM_CANNONBALL: self.CAMimg,
                         }
 
     def get_img(self, type: int):
@@ -60,7 +63,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((400, 400))
     screen.fill((255, 255, 255))
     i = ImgRes()
-    img = i.get_img(TO_BASE)
+    img = i.get_img(BU_ENTER)
     screen.blit(img, (0, 0))
     pygame.display.flip()
     while True:
