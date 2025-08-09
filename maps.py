@@ -10,7 +10,7 @@ taskType = [
     c.SummonType.ARMORED,
     c.SummonType.RAPID,
     c.SummonType.BOSS,
-    c.WAVE_END,
+    c.SummonType.END,
 ]
 
 
@@ -126,9 +126,9 @@ class Task:
                 return c.REST
             task = self.routeTaskList[self.taskLoc]
             if task in taskType:
-                if task == c.WAVE_END:
+                if task == c.END:
                     self.ifEnd = True
-                    return c.WAVE_END
+                    return c.SummonType
                 else:
                     self.taskLoc += 1
                     return task

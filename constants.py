@@ -1,9 +1,6 @@
 from enum import IntEnum, auto
 
 
-# ammo
-
-
 class AmmoType(IntEnum):
     ARROW = auto()
     BEAM = auto()
@@ -24,9 +21,6 @@ AM_DAMAGE_CANNONBALL = 15
 AM_DAMAGE_BULLET = 25
 
 AM_RANGE_CANNONBALL = 100
-
-
-# enemy
 
 
 class EnemyType(IntEnum):
@@ -78,9 +72,6 @@ EM_INTERVAL_BOSS = 300
 EM_BOSS_RECOVER = 100
 
 
-# tower
-
-
 class TowerType(IntEnum):
     BASE = 0
     TEST = auto()
@@ -117,9 +108,6 @@ COMMON = 10
 UPGRADE = 11
 
 
-# entity
-
-
 class EntityType(IntEnum):
     FINISH = 200
 
@@ -136,9 +124,6 @@ ME_R_TIME_D = 30
 WORD_SIZE = 50
 
 
-# page
-
-
 class PageType(IntEnum):
     WELCOME = 0
     SELECT = auto()
@@ -148,31 +133,22 @@ class PageType(IntEnum):
     GAME = auto()
 
 
-# task
-
-
 class SummonType(IntEnum):
     TEST = 0
+    END = -1
     COMMON = auto()
     ARMORED = auto()
     RAPID = auto()
     BOSS = auto()
 
 
-WAVE_END = -11
 END = -10
 REST = -12
-
-
-# map_task
 
 
 class MapTaskType(IntEnum):
     RESET = -13
     UPDATE = -14
-
-
-# gamejudge
 
 
 class GameJudge(IntEnum):

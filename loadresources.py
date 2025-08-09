@@ -12,7 +12,7 @@ class ImgRes:
         self.AEimg = pygame.image.load("resources/armoredEnemy.png").convert_alpha()
         self.CEimg = pygame.image.load("resources/commonEnemy.png").convert_alpha()
         self.REimg = pygame.image.load("resources/rapidEnemy.png").convert_alpha()
-        self.BEimg = pygame.image.load("resources/bossEnemy.png").convert_alpha()
+        self.BEimg = pygame.image.load("resources/BossEnemy.png").convert_alpha()
         # tower
         self.ATimg = pygame.image.load("resources/archerTower.png").convert_alpha()
         self.WTimg = pygame.image.load("resources/wizardTower.png").convert_alpha()
@@ -31,13 +31,15 @@ class ImgRes:
         self.BAMimg = pygame.image.load("resources/beam.png")
         self.CAMimg = pygame.image.load("resources/cannonball.png")
         self.BuAMimg = pygame.image.load("resources/bullet.png")
-        # dict
-        self.imgDict = {
+        # dicts
+        self.enemyImgs = {
             c.EnemyType.ARMORED: self.AEimg,
             c.EnemyType.COMMON: self.CEimg,
             c.EnemyType.RAPID: self.REimg,
             c.EnemyType.TEST: self.TEimg,
             c.EnemyType.BOSS: self.BEimg,
+        }
+        self.towerImgs = {
             c.TowerType.ARCHER: self.ATimg,
             c.TowerType.WIZARD: self.WTimg,
             c.TowerType.CANNON: self.GTimg,
@@ -45,8 +47,10 @@ class ImgRes:
             c.TowerType.BASE: self.BTimg,
             c.TowerType.SNIPER: self.STimg,
             c.TowerType.MARKSMAN: self.MTimg,
-            c.EntityType.FINISH: self.FETimg,
-            c.ButtonType.TO_DELETE: self.DBUimg,
+        }
+        self.entityImgs = {c.EntityType.FINISH: self.FETimg}
+        self.buttonImgs = {c.ButtonType.TO_DELETE: self.DBUimg}
+        self.ammoImgs = {
             c.AmmoType.ARROW: self.AAMimg,
             c.AmmoType.BEAM: self.BAMimg,
             c.AmmoType.CANNONBALL: self.CAMimg,
@@ -63,7 +67,17 @@ class ImgRes:
             c.AmmoType,
         ],
     ):
-        return self.imgDict[sprite_type]
+        if isinstance(sprite_type, c.EnemyType):
+            return self.enemyImgs[sprite_type]
+        if isinstance(sprite_type, c.TowerType):
+            return self.towerImgs[sprite_type]
+        if isinstance(sprite_type, c.EntityType):
+            return self.entityImgs[sprite_type]
+        if isinstance(sprite_type, c.ButtonType):
+            return self.buttonImgs[sprite_type]
+        if isinstance(sprite_type, c.AmmoType):
+            return self.ammoImgs[sprite_type]
+        raise KeyError(f"Unsupported sprite type: {sprite_type}")
 
 
 if __name__ == "__main__":
