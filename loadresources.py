@@ -3,32 +3,22 @@ import sys
 from constants import *
 
 
-class ImgRes():
+class ImgRes:
     def __init__(self):
         # game
         self.icon = pygame.image.load("resources/icon.png").convert_alpha()
         # enemy
-        self.AEimg = pygame.image.load(
-            "resources/armoredEnemy.png").convert_alpha()
-        self.CEimg = pygame.image.load(
-            "resources/commonEnemy.png").convert_alpha()
-        self.REimg = pygame.image.load(
-            "resources/rapidEnemy.png").convert_alpha()
-        self.BEimg = pygame.image.load(
-            "resources/bossEnemy.png").convert_alpha()
+        self.AEimg = pygame.image.load("resources/armoredEnemy.png").convert_alpha()
+        self.CEimg = pygame.image.load("resources/commonEnemy.png").convert_alpha()
+        self.REimg = pygame.image.load("resources/rapidEnemy.png").convert_alpha()
+        self.BEimg = pygame.image.load("resources/bossEnemy.png").convert_alpha()
         # tower
-        self.ATimg = pygame.image.load(
-            "resources/archerTower.png").convert_alpha()
-        self.WTimg = pygame.image.load(
-            "resources/wizardTower.png").convert_alpha()
-        self.GTimg = pygame.image.load(
-            "resources/cannonTower.png").convert_alpha()
-        self.BTimg = pygame.image.load(
-            "resources/baseTower.png").convert_alpha()
-        self.MTimg = pygame.image.load(
-            "resources/marksmanTower.png").convert_alpha()
-        self.STimg = pygame.image.load(
-            "resources/sniperTower.png").convert_alpha()
+        self.ATimg = pygame.image.load("resources/archerTower.png").convert_alpha()
+        self.WTimg = pygame.image.load("resources/wizardTower.png").convert_alpha()
+        self.GTimg = pygame.image.load("resources/cannonTower.png").convert_alpha()
+        self.BTimg = pygame.image.load("resources/baseTower.png").convert_alpha()
+        self.MTimg = pygame.image.load("resources/marksmanTower.png").convert_alpha()
+        self.STimg = pygame.image.load("resources/sniperTower.png").convert_alpha()
         # test
         self.TEimg = pygame.image.load("resources/fy.png").convert_alpha()
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
@@ -41,34 +31,32 @@ class ImgRes():
         self.CAMimg = pygame.image.load("resources/cannonball.png")
         self.BuAMimg = pygame.image.load("resources/bullet.png")
         # dict
-        self.imgDict = {EM_ARMORED: self.AEimg,
-                        EM_COMMON: self.CEimg,
-                        EM_RAPID: self.REimg,
-                        EM_TEST: self.TEimg,
-                        EM_BOSS: self.BEimg,
-
-                        TO_ARCHER: self.ATimg,
-                        TO_WIZARD: self.WTimg,
-                        TO_CANNON: self.GTimg,
-                        TO_TEST: self.TTimg,
-                        TO_BASE: self.BTimg,
-                        TO_SNIPER: self.STimg,
-                        TO_MARKSMAN: self.MTimg,
-
-                        ET_FINISH: self.FETimg,
-                        BU_TO_DELETE: self.DBUimg,
-
-                        AM_ARROW: self.AAMimg,
-                        AM_BEAM: self.BAMimg,
-                        AM_CANNONBALL: self.CAMimg,
-                        AM_BULLET: self.BuAMimg,
-                        }
+        self.imgDict = {
+            EM_ARMORED: self.AEimg,
+            EM_COMMON: self.CEimg,
+            EM_RAPID: self.REimg,
+            EM_TEST: self.TEimg,
+            EM_BOSS: self.BEimg,
+            TO_ARCHER: self.ATimg,
+            TO_WIZARD: self.WTimg,
+            TO_CANNON: self.GTimg,
+            TO_TEST: self.TTimg,
+            TO_BASE: self.BTimg,
+            TO_SNIPER: self.STimg,
+            TO_MARKSMAN: self.MTimg,
+            ET_FINISH: self.FETimg,
+            BU_TO_DELETE: self.DBUimg,
+            AM_ARROW: self.AAMimg,
+            AM_BEAM: self.BAMimg,
+            AM_CANNONBALL: self.CAMimg,
+            AM_BULLET: self.BuAMimg,
+        }
 
     def get_img(self, type: int):
         return self.imgDict[type]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))
     screen.fill((255, 255, 255))

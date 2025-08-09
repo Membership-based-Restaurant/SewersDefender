@@ -4,15 +4,19 @@ import friends
 from math import dist
 from constants import *
 from numpy import arctan2
-towerUpgradeIndex = {TO_BASE: [TO_CANNON, TO_ARCHER, TO_WIZARD],
-                     TO_ARCHER: [TO_MARKSMAN, TO_SNIPER]}
-towerCostIndex = {TO_BASE: 0,
-                  TO_ARCHER: TO_COST_ARCHER,
-                  TO_CANNON: TO_COST_CANNON,
-                  TO_WIZARD: TO_COST_WIZARD,
-                  TO_SNIPER: TO_COST_SNIPER,
-                  TO_MARKSMAN: TO_COST_MARKSMAN,
-                  }
+
+towerUpgradeIndex = {
+    TO_BASE: [TO_CANNON, TO_ARCHER, TO_WIZARD],
+    TO_ARCHER: [TO_MARKSMAN, TO_SNIPER],
+}
+towerCostIndex = {
+    TO_BASE: 0,
+    TO_ARCHER: TO_COST_ARCHER,
+    TO_CANNON: TO_COST_CANNON,
+    TO_WIZARD: TO_COST_WIZARD,
+    TO_SNIPER: TO_COST_SNIPER,
+    TO_MARKSMAN: TO_COST_MARKSMAN,
+}
 
 
 class ToManager:
@@ -62,7 +66,7 @@ class ToManager:
         if tower == False:
             pass
         else:
-            print('Operating')
+            print("Operating")
             self.ifOperating = True
             self.selectedTower = tower
             tower.ifSelected = True
@@ -70,12 +74,13 @@ class ToManager:
     def create_operateButtons(self):
         if self.selectedTower.ifUpgradeable:
             for num in range(len(towerUpgradeIndex[self.selectedTower.towerType])):
-                self.operateButtonManager.buttonList.append(entities.UpgradeButton(self.game,
-                                                                                   self.selectedTower,
-                                                                                   num))
+                self.operateButtonManager.buttonList.append(
+                    entities.UpgradeButton(self.game, self.selectedTower, num)
+                )
         if self.selectedTower.towerType != TO_BASE:
             self.operateButtonManager.buttonList.append(
-                entities.TowerDeleteButton(self.game, self.selectedTower))
+                entities.TowerDeleteButton(self.game, self.selectedTower)
+            )
 
     def delete_tower(self, tower):
         tower.ifSelected = False
@@ -91,9 +96,11 @@ class ToManager:
     def upgrade_tower(self, tower, num: int):
         if not tower.towerType in towerUpgradeIndex:
             return
-        if towerCostIndex[towerUpgradeIndex[tower.towerType][num]] > self.game.map.money:
-            self.game.messageManager.create_message(
-                'Not enough money', tower.pos, 20)
+        if (
+            towerCostIndex[towerUpgradeIndex[tower.towerType][num]]
+            > self.game.map.money
+        ):
+            self.game.messageManager.create_message("Not enough money", tower.pos, 20)
             return
         tower.ifSelected = False
         tower.ifWorking = False  # stop old tower
@@ -105,8 +112,8 @@ class ToManager:
         self.selectedTower.ifSelected = True
 
     def manage_to_list(self):
-        temptList = self.towerList[:self.numBases]
-        for tower in self.towerList[self.numBases:]:
+        temptList = self.towerList[: self.numBases]
+        for tower in self.towerList[self.numBases :]:
             if tower.ifWorking:
                 tower.to_search(self.game.enemyManager.enemyList)
                 tower.to_prepare()
@@ -153,7 +160,9 @@ class Tower:
         self.img_rect = self.img.get_rect()
         self.img_rect.center = self.pos
         self.hitbox.center = (
-            self.pos[0], self.pos[1]-int(0.15*self.img_rect.height))
+            self.pos[0],
+            self.pos[1] - int(0.15 * self.img_rect.height),
+        )
         # upgrade
         self.ifUpgradeable = self.towerType in towerUpgradeIndex
 
@@ -180,20 +189,16 @@ class Tower:
         pygame.draw.rect(self.screen, (0, 255, 0), self.hitbox, 1)
         if self.ifSelected:
             if self.ifFoundTarget:
-                pygame.draw.line(self.screen, (0, 0, 255),
-                                 self.pos, self.target.pos)
-            pygame.draw.circle(self.screen, (0, 0, 255),
-                               self.pos, self.searchRange, 1)
+                pygame.draw.line(self.screen, (0, 0, 255), self.pos, self.target.pos)
+            pygame.draw.circle(self.screen, (0, 0, 255), self.pos, self.searchRange, 1)
 
     def to_attack(self):
         routeIndex = self.target.routeIndex
-        time = round(
-            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_ARROW)
-        destLoc = self.target.location+time*self.target.speed
+        time = round(dist(self.pos, routeIndex[self.target.location]) / AM_SPEED_ARROW)
+        destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex)-1
-        self.game.ammoManager.create_ammo(
-            self.pos, routeIndex[destLoc], self.ammo)
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False
 
     def to_search(self, enemyList):
@@ -280,12 +285,12 @@ class CannonTower(Tower):
     def to_attack(self):
         routeIndex = self.target.routeIndex
         time = round(
-            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_CANNONBALL)
-        destLoc = self.target.location+time*self.target.speed
+            dist(self.pos, routeIndex[self.target.location]) / AM_SPEED_CANNONBALL
+        )
+        destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex)-1
-        self.game.ammoManager.create_ammo(
-            self.pos, routeIndex[destLoc], self.ammo)
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False
 
 
@@ -303,13 +308,11 @@ class WizardTower(Tower):
 
     def to_attack(self):
         routeIndex = self.target.routeIndex
-        time = round(
-            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_BEAM)
-        destLoc = self.target.location+time*self.target.speed
+        time = round(dist(self.pos, routeIndex[self.target.location]) / AM_SPEED_BEAM)
+        destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex)-1
-        self.game.ammoManager.create_ammo(
-            self.pos, routeIndex[destLoc], self.ammo)
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False
 
 
@@ -340,11 +343,9 @@ class SniperTower(Tower):
 
     def to_attack(self):
         routeIndex = self.target.routeIndex
-        time = round(
-            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_BULLET)
-        destLoc = self.target.location+time*self.target.speed
+        time = round(dist(self.pos, routeIndex[self.target.location]) / AM_SPEED_BULLET)
+        destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex)-1
-        self.game.ammoManager.create_ammo(
-            self.pos, routeIndex[destLoc], self.ammo)
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False

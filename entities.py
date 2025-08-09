@@ -30,7 +30,7 @@ class Finish(Entity):
         self.hitbox = self.img.get_rect().inflate(-10, -10)  # example
 
 
-class FinManager():
+class FinManager:
     def __init__(self, game):
         self.game = game
         self.finishList = []
@@ -49,10 +49,18 @@ class FinManager():
             finish.et_blit()
 
 
-class Message():
-    def __init__(self, screen: pygame.Surface, info: str, pos: tuple, size: int, color=(255, 0, 0), remaingTime=ME_R_TIME_D):
+class Message:
+    def __init__(
+        self,
+        screen: pygame.Surface,
+        info: str,
+        pos: tuple,
+        size: int,
+        color=(255, 0, 0),
+        remaingTime=ME_R_TIME_D,
+    ):
         self.screen = screen
-        font = pygame.font.Font('resources/FanwoodText-Regular.ttf', size)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", size)
         self.img = font.render(info, True, color)
         self.img_rect = self.img.get_rect()
         self.img_rect.center = pos
@@ -67,14 +75,13 @@ class Message():
         self.remainingTime -= 1
 
 
-class MeManager():
+class MeManager:
     def __init__(self, game):
         self.game = game
         self.messageList = []
 
     def create_message(self, info: str, pos: tuple, size: int, color=(255, 0, 0)):
-        self.messageList.append(
-            Message(self.game.screen, info, pos, size, color))
+        self.messageList.append(Message(self.game.screen, info, pos, size, color))
 
     def manage_me_list(self):
         temptList = []
@@ -106,11 +113,9 @@ class Button(Entity):
 
 class TaskStartButton(Button):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Start", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 10))
@@ -123,11 +128,9 @@ class TaskStartButton(Button):
 
 class ExitButton(Button):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Exit", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -141,8 +144,7 @@ class ExitButton(Button):
 class TowerDeleteButton(Button):
     def __init__(self, game, tower):
         self.game = game
-        self.pos = (tower.hitbox.centerx,
-                    tower.hitbox.bottom+int(UP_WIDTH/2))
+        self.pos = (tower.hitbox.centerx, tower.hitbox.bottom + int(UP_WIDTH / 2))
         self.screen = game.screen
         self.ifLiving = True
         self.et_set()
@@ -166,8 +168,10 @@ class UpgradeButton(Button):
         self.game = game
         self.type = tower.towerType
         self.num = num
-        self.pos = (tower.hitbox.left-int(UP_WIDTH/2),
-                    tower.hitbox.top+UP_WIDTH*num)
+        self.pos = (
+            tower.hitbox.left - int(UP_WIDTH / 2),
+            tower.hitbox.top + UP_WIDTH * num,
+        )
         self.screen = game.screen
         self.ifLiving = True
         self.et_set()
@@ -177,10 +181,10 @@ class UpgradeButton(Button):
         self.tower = tower
 
     def et_set(self):
-        temptImg = self.game.res.get_img(
-            towers.towerUpgradeIndex[self.type][self.num])
-        self.img = pygame.transform.scale(temptImg.subsurface(
-            (pygame.Rect(0, 0, 50, 50))), (UP_WIDTH, UP_WIDTH))
+        temptImg = self.game.res.get_img(towers.towerUpgradeIndex[self.type][self.num])
+        self.img = pygame.transform.scale(
+            temptImg.subsurface((pygame.Rect(0, 0, 50, 50))), (UP_WIDTH, UP_WIDTH)
+        )
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
     def bu_work(self):
@@ -208,11 +212,9 @@ class PageChangeButton(Button):
 
 class EnterButton(PageChangeButton):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Game", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -221,11 +223,9 @@ class EnterButton(PageChangeButton):
 
 class GamePauseButton(PageChangeButton):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Pause", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -234,11 +234,9 @@ class GamePauseButton(PageChangeButton):
 
 class GameRestartButton(PageChangeButton):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Replay", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -253,11 +251,9 @@ class GameRestartButton(PageChangeButton):
 
 class GameContinueButton(PageChangeButton):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Continue", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -266,11 +262,9 @@ class GameContinueButton(PageChangeButton):
 
 class BackButton(PageChangeButton):
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
         wordImg = font.render("Back", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -302,7 +296,7 @@ class MapChooseButton(PageChangeButton):
         self.pageManager.currentPage = self.destPage
 
 
-class BuManager():
+class BuManager:
     def __init__(self, page):
         self.page = page
         self.buttonList = []

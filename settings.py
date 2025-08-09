@@ -5,8 +5,8 @@ import pygame
 class Settings:
     def __init__(self):
         # screen settings
-        self.screenSize = ((1200, 800))
+        self.screenSize = (1200, 800)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(pygame.image.get_extended())

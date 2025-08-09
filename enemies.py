@@ -12,22 +12,17 @@ class EnManager:
     def create_enemy(self, type: int, routeNum: int):
         # print('execute task:',type)
         if type == SUMMON_CE:
-            self.enemyList.append(CommonEnemy(
-                self.game, self.enemyNum, routeNum))
+            self.enemyList.append(CommonEnemy(self.game, self.enemyNum, routeNum))
         elif type == SUMMON_AE:
-            self.enemyList.append(ArmoredEnemy(
-                self.game, self.enemyNum, routeNum))
+            self.enemyList.append(ArmoredEnemy(self.game, self.enemyNum, routeNum))
         elif type == SUMMON_RE:
-            self.enemyList.append(RapidEnemy(
-                self.game, self.enemyNum, routeNum))
+            self.enemyList.append(RapidEnemy(self.game, self.enemyNum, routeNum))
         elif type == SUMMON_BE:
-            self.enemyList.append(BossEnemy(
-                self.game, self.enemyNum, routeNum))
+            self.enemyList.append(BossEnemy(self.game, self.enemyNum, routeNum))
             print(1)
         # test
         elif type == SUMMON_TE:
-            self.enemyList.append(
-                TestEnemy(self.game, self.enemyNum, routeNum))
+            self.enemyList.append(TestEnemy(self.game, self.enemyNum, routeNum))
         else:
             return False
         self.enemyNum += 1
@@ -98,7 +93,7 @@ class Enemy:
 
     def en_move(self, temptSpeed=0):
         # move the enemy
-        if len(self.routeIndex)-1-self.location < self.speed:
+        if len(self.routeIndex) - 1 - self.location < self.speed:
             self.ifStuck = True
             return
         if temptSpeed == 0:
@@ -113,20 +108,26 @@ class Enemy:
     def en_blit(self):
         self.screen.blit(self.img, self.img_rect)
         pygame.draw.rect(self.screen, (0, 255, 0), self.hitbox, 1)
-        pygame.draw.rect(self.screen,
-                         (255, 0, 0),
-                         (self.hitbox.centerx-int(self.c_hp/2*EM_HP_COEF),
-                          self.hitbox.centery+10,
-                          int(self.c_hp*EM_HP_COEF),
-                          3
-                          ))
-        pygame.draw.rect(self.screen,
-                         (0, 255, 0),
-                         (self.hitbox.centerx-int(self.c_hp/2*EM_HP_COEF),
-                          self.hitbox.centery+10,
-                          int(self.hp*EM_HP_COEF),
-                          3
-                          ))
+        pygame.draw.rect(
+            self.screen,
+            (255, 0, 0),
+            (
+                self.hitbox.centerx - int(self.c_hp / 2 * EM_HP_COEF),
+                self.hitbox.centery + 10,
+                int(self.c_hp * EM_HP_COEF),
+                3,
+            ),
+        )
+        pygame.draw.rect(
+            self.screen,
+            (0, 255, 0),
+            (
+                self.hitbox.centerx - int(self.c_hp / 2 * EM_HP_COEF),
+                self.hitbox.centery + 10,
+                int(self.hp * EM_HP_COEF),
+                3,
+            ),
+        )
 
     def en_attack(self):
         pass
@@ -227,8 +228,9 @@ class BossEnemy(Enemy):
         if self.skillInterval > 0:
             self.skillInterval -= 1
         else:
-            if self.c_hp-self.hp > EM_BOSS_RECOVER:
+            if self.c_hp - self.hp > EM_BOSS_RECOVER:
                 self.hp += EM_BOSS_RECOVER
                 self.skillInterval = self.c_skillInterval
                 self.game.messageManager.create_message(
-                    f'+{str(EM_BOSS_RECOVER)}', self.pos, 30, (0, 255, 0))
+                    f"+{str(EM_BOSS_RECOVER)}", self.pos, 30, (0, 255, 0)
+                )
