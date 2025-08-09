@@ -7,8 +7,9 @@ import towers
 import ammunition
 import maps
 import entities
-from constants import *
+import constants as c
 import settings
+from typing import override
 
 
 class PaManager:
@@ -43,9 +44,9 @@ class PaManager:
             self.currentPage.pa_run()
             pygame.display.flip()
             endTime = time.time()
-            runTime = endTime-startTime
-            if runTime < 1/60:
-                time.sleep(1/60-runTime)
+            runTime = endTime - startTime
+            if runTime < 1 / 60:
+                time.sleep(1 / 60 - runTime)
         pygame.quit()
         sys.exit()
 
@@ -65,7 +66,7 @@ class Page:
         self.buttonManager.buttonList.append(None)  # example
 
     def pa_run(self):
-        pygame.display.set_caption('Test')
+        pygame.display.set_caption("Test")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -81,62 +82,77 @@ class Page:
 
 
 class Welcome(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkwe.png").convert_alpha()
         self.buttonManager.buttonList.append(
-            entities.EnterButton(self.pageManager.select, (600, 400)))
-        self.buttonManager.buttonList.append(
-            entities.ExitButton(self, (600, 500)))
+            entities.EnterButton(self.pageManager.select, (600, 400))
+        )
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 500)))
         pass
 
 
 class Select(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bks.png").convert_alpha()
         self.buttonManager.buttonList.append(
-            entities.MapChooseButton('game_maps/map1/', self.pageManager.game, (600, 400)))
+            entities.MapChooseButton(
+                "game_maps/map1/", self.pageManager.game, (600, 400)
+            )
+        )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.welcome, (57, 40)))
+            entities.BackButton(self.pageManager.welcome, (57, 40))
+        )
         pass
 
 
 class ConcludeWin(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkw.png").convert_alpha()
         self.buttonManager.buttonList.append(
-            entities.GameRestartButton(self.pageManager.game, (600, 400)))
+            entities.GameRestartButton(self.pageManager.game, (600, 400))
+        )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.select, (600, 500)))
-        self.buttonManager.buttonList.append(
-            entities.ExitButton(self, (600, 600)))
+            entities.BackButton(self.pageManager.select, (600, 500))
+        )
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 600)))
         pass
 
 
 class ConcludeLose(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkl.png").convert_alpha()
         self.buttonManager.buttonList.append(
-            entities.GameRestartButton(self.pageManager.game, (600, 400)))
+            entities.GameRestartButton(self.pageManager.game, (600, 400))
+        )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.select, (600, 500)))
-        self.buttonManager.buttonList.append(
-            entities.ExitButton(self, (600, 600)))
+            entities.BackButton(self.pageManager.select, (600, 500))
+        )
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 600)))
         pass
 
 
 class Pause(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkp.png").convert_alpha()
         self.buttonManager.buttonList.append(
-            entities.GameRestartButton(self.pageManager.game, (600, 400)))
+            entities.GameRestartButton(self.pageManager.game, (600, 400))
+        )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.select, (600, 500)))
+            entities.BackButton(self.pageManager.select, (600, 500))
+        )
         self.buttonManager.buttonList.append(
-            entities.GameContinueButton(self.pageManager.game, (600, 600)))
+            entities.GameContinueButton(self.pageManager.game, (600, 600))
+        )
         pass
 
 
 class Game(Page):
+    @override
     def pa_set(self):
         self.set_buttons()
         self.mapPath = ""
@@ -144,9 +160,9 @@ class Game(Page):
     def set_buttons(self):
         self.buttonManager.clear_bu_list()
         self.buttonManager.buttonList.append(
-            entities.GamePauseButton(self.pageManager.pause, (1135, 38)))
-        self.buttonManager.buttonList.append(
-            entities.TaskStartButton(self, (55, 113)))
+            entities.GamePauseButton(self.pageManager.pause, (1135, 38))
+        )
+        self.buttonManager.buttonList.append(entities.TaskStartButton(self, (55, 113)))
 
     def set_game_resources(self):
         self.map = maps.Map(self, self.mapPath)
@@ -158,17 +174,18 @@ class Game(Page):
         self.ifExecuteTasks = False
         self.ifTaskEnd = False
 
+    @override
     def pa_run(self):
-        pygame.display.set_caption('Gaming')
+        pygame.display.set_caption("Gaming")
         self.check_event()
         if self.ifExecuteTasks:
             self.execute_task()
         self.update_entities()
         self.update_screen()
         flag = self.judge_game()
-        if flag == WIN:
+        if flag == c.GameJudge.WIN:
             self.pageManager.currentPage = self.pageManager.concludeWin
-        elif flag == LOSE:
+        elif flag == c.GameJudge.LOSE:
             self.pageManager.currentPage = self.pageManager.concludeLose
         else:
             pass
@@ -181,7 +198,7 @@ class Game(Page):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # operate
                 if self.towerManager.ifOperating:
-                    print('Operatingmode:', event.button)
+                    print("Operatingmode:", event.button)
                     if self.towerManager.operateButtonManager.check_bu_list(event.pos):
                         self.towerManager.operateButtonManager.clear_bu_list()
                         self.towerManager.create_operateButtons()
@@ -196,25 +213,24 @@ class Game(Page):
         pygame.event.pump()
 
     def execute_task(self):
-        taskDict = self.map.get_task_dict(UPDATE)
-        if END in taskDict.values():
+        taskDict = self.map.get_task_dict(c.MapTaskType.UPDATE)
+        if not taskDict:
+            return
+        if taskDict.get(0) == c.TaskEvent.END and len(taskDict) == 1:
             self.ifExecuteTasks = False
             self.ifTaskEnd = True
-        else:
-            for routeNum in range(self.map.numRoutes):
-                if routeNum in taskDict.keys():
-                    task = taskDict[routeNum]
-                    if task == REST:
-                        pass
-                    else:
-                        self.enemyManager.create_enemy(task, routeNum)
+            return
+        for routeNum, task in taskDict.items():
+            if isinstance(task, c.TaskEvent):
+                continue
+            self.enemyManager.create_enemy(task, routeNum)
 
     def judge_game(self):
         if self.map.finishManager.if_lose():
-            return LOSE
+            return c.GameJudge.LOSE
         if self.ifTaskEnd and len(self.enemyManager.enemyList) == 0:
-            return WIN
-        return UNDECIDED
+            return c.GameJudge.WIN
+        return c.GameJudge.UNDECIDED
 
     def update_entities(self):
         self.enemyManager.manage_en_list()
@@ -223,15 +239,19 @@ class Game(Page):
         self.messageManager.manage_me_list()
 
     def blit_info(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         temptImg1 = font.render(
-            f"Money:{self.map.money:d}".format(), True, (239, 228, 176))
+            f"Money:{self.map.money:d}".format(), True, (239, 228, 176)
+        )
         temptImg2 = font.render(
-            f"Wave:{self.map.currentWave+1:d}".format(), True, (239, 228, 176))
+            f"Wave:{self.map.currentWave + 1:d}".format(), True, (239, 228, 176)
+        )
         temptImg3 = font.render(
-            f"EnemyKilled:{self.enemyManager.enemyKilledNum:d}".format(), True, (239, 228, 176))
-        infoImg = pygame.Surface((1200, temptImg1.get_height()+10))
+            f"EnemyKilled:{self.enemyManager.enemyKilledNum:d}".format(),
+            True,
+            (239, 228, 176),
+        )
+        infoImg = pygame.Surface((1200, temptImg1.get_height() + 10))
         infoImg.fill((135, 75, 24))
         pygame.draw.rect(infoImg, (239, 228, 176), infoImg.get_rect(), 1)
         infoImg.blit(temptImg1, (10, 5))
@@ -251,6 +271,6 @@ class Game(Page):
         self.messageManager.blit_me_list()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     p = PaManager()
     p.manage_pages()

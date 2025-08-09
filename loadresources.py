@@ -1,34 +1,25 @@
 import pygame
 import sys
-from constants import *
+from typing import Union
+import constants as c
 
 
-class ImgRes():
+class ImgRes:
     def __init__(self):
         # game
         self.icon = pygame.image.load("resources/icon.png").convert_alpha()
         # enemy
-        self.AEimg = pygame.image.load(
-            "resources/armoredEnemy.png").convert_alpha()
-        self.CEimg = pygame.image.load(
-            "resources/commonEnemy.png").convert_alpha()
-        self.REimg = pygame.image.load(
-            "resources/rapidEnemy.png").convert_alpha()
-        self.BEimg = pygame.image.load(
-            "resources/bossEnemy.png").convert_alpha()
+        self.AEimg = pygame.image.load("resources/armoredEnemy.png").convert_alpha()
+        self.CEimg = pygame.image.load("resources/commonEnemy.png").convert_alpha()
+        self.REimg = pygame.image.load("resources/rapidEnemy.png").convert_alpha()
+        self.BEimg = pygame.image.load("resources/BossEnemy.png").convert_alpha()
         # tower
-        self.ATimg = pygame.image.load(
-            "resources/archerTower.png").convert_alpha()
-        self.WTimg = pygame.image.load(
-            "resources/wizardTower.png").convert_alpha()
-        self.GTimg = pygame.image.load(
-            "resources/cannonTower.png").convert_alpha()
-        self.BTimg = pygame.image.load(
-            "resources/baseTower.png").convert_alpha()
-        self.MTimg = pygame.image.load(
-            "resources/marksmanTower.png").convert_alpha()
-        self.STimg = pygame.image.load(
-            "resources/sniperTower.png").convert_alpha()
+        self.ATimg = pygame.image.load("resources/archerTower.png").convert_alpha()
+        self.WTimg = pygame.image.load("resources/wizardTower.png").convert_alpha()
+        self.GTimg = pygame.image.load("resources/cannonTower.png").convert_alpha()
+        self.BTimg = pygame.image.load("resources/baseTower.png").convert_alpha()
+        self.MTimg = pygame.image.load("resources/marksmanTower.png").convert_alpha()
+        self.STimg = pygame.image.load("resources/sniperTower.png").convert_alpha()
         # test
         self.TEimg = pygame.image.load("resources/fy.png").convert_alpha()
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
@@ -40,40 +31,61 @@ class ImgRes():
         self.BAMimg = pygame.image.load("resources/beam.png")
         self.CAMimg = pygame.image.load("resources/cannonball.png")
         self.BuAMimg = pygame.image.load("resources/bullet.png")
-        # dict
-        self.imgDict = {EM_ARMORED: self.AEimg,
-                        EM_COMMON: self.CEimg,
-                        EM_RAPID: self.REimg,
-                        EM_TEST: self.TEimg,
-                        EM_BOSS: self.BEimg,
+        # dicts
+        self.enemyImgs = {
+            c.EnemyType.ARMORED: self.AEimg,
+            c.EnemyType.COMMON: self.CEimg,
+            c.EnemyType.RAPID: self.REimg,
+            c.EnemyType.TEST: self.TEimg,
+            c.EnemyType.BOSS: self.BEimg,
+        }
+        self.towerImgs = {
+            c.TowerType.ARCHER: self.ATimg,
+            c.TowerType.WIZARD: self.WTimg,
+            c.TowerType.CANNON: self.GTimg,
+            c.TowerType.TEST: self.TTimg,
+            c.TowerType.BASE: self.BTimg,
+            c.TowerType.SNIPER: self.STimg,
+            c.TowerType.MARKSMAN: self.MTimg,
+        }
+        self.entityImgs = {c.EntityType.FINISH: self.FETimg}
+        self.buttonImgs = {c.ButtonType.TO_DELETE: self.DBUimg}
+        self.ammoImgs = {
+            c.AmmoType.ARROW: self.AAMimg,
+            c.AmmoType.BEAM: self.BAMimg,
+            c.AmmoType.CANNONBALL: self.CAMimg,
+            c.AmmoType.BULLET: self.BuAMimg,
+        }
 
-                        TO_ARCHER: self.ATimg,
-                        TO_WIZARD: self.WTimg,
-                        TO_CANNON: self.GTimg,
-                        TO_TEST: self.TTimg,
-                        TO_BASE: self.BTimg,
-                        TO_SNIPER: self.STimg,
-                        TO_MARKSMAN: self.MTimg,
+    def get_img(
+        self,
+        sprite_type: Union[
+            c.EnemyType,
+            c.TowerType,
+            c.EntityType,
+            c.ButtonType,
+            c.AmmoType,
+        ],
+    ):
+        if isinstance(sprite_type, c.EnemyType):
+            return self.enemyImgs[sprite_type]
+        if isinstance(sprite_type, c.TowerType):
+            return self.towerImgs[sprite_type]
+        if isinstance(sprite_type, c.EntityType):
+            return self.entityImgs[sprite_type]
+        if isinstance(sprite_type, c.ButtonType):
+            return self.buttonImgs[sprite_type]
+        if isinstance(sprite_type, c.AmmoType):
+            return self.ammoImgs[sprite_type]
+        raise KeyError(f"Unsupported sprite type: {sprite_type}")
 
-                        ET_FINISH: self.FETimg,
-                        BU_TO_DELETE: self.DBUimg,
 
-                        AM_ARROW: self.AAMimg,
-                        AM_BEAM: self.BAMimg,
-                        AM_CANNONBALL: self.CAMimg,
-                        AM_BULLET: self.BuAMimg,
-                        }
-
-    def get_img(self, type: int):
-        return self.imgDict[type]
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((400, 400))
     screen.fill((255, 255, 255))
     i = ImgRes()
-    img = i.get_img(BU_ENTER)
+    img = i.get_img(c.ButtonType.ENTER)
     screen.blit(img, (0, 0))
     pygame.display.flip()
     while True:
