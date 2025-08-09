@@ -1,5 +1,6 @@
 import pygame
 import constants as c
+from typing import override
 
 
 class EnManager:
@@ -135,6 +136,7 @@ class Enemy:
 
 
 class TestEnemy(Enemy):
+    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.TEST)
@@ -148,11 +150,13 @@ class TestEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_D
 
+    @override
     def en_skill(self):
         pass
 
 
 class CommonEnemy(Enemy):
+    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.COMMON)
@@ -166,11 +170,13 @@ class CommonEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_COMMON
 
+    @override
     def en_skill(self):
         pass
 
 
 class ArmoredEnemy(Enemy):
+    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.ARMORED)
@@ -184,11 +190,13 @@ class ArmoredEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_ARMORED
 
+    @override
     def en_skill(self):
         pass
 
 
 class RapidEnemy(Enemy):
+    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.RAPID)
@@ -202,11 +210,13 @@ class RapidEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_RAPID
 
+    @override
     def en_skill(self):
         pass
 
 
 class BossEnemy(Enemy):
+    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.BOSS)
@@ -222,6 +232,7 @@ class BossEnemy(Enemy):
         self.skillInterval = c.EM_INTERVAL_BOSS
         self.c_skillInterval = c.EM_INTERVAL_BOSS
 
+    @override
     def en_skill(self):
         if self.skillInterval > 0:
             self.skillInterval -= 1

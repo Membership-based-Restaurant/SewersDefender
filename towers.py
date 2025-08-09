@@ -1,7 +1,13 @@
+from __future__ import annotations
+
 import pygame
 import entities
 from math import dist
+from typing import TYPE_CHECKING, override
 import constants as c
+
+if TYPE_CHECKING:
+    from enemies import Enemy
 
 
 towerUpgradeIndex = {
@@ -20,12 +26,12 @@ towerCostIndex = {
 
 class ToManager:
     def __init__(self, game):
-        self.towerList = []
+        self.towerList: list[Tower] = []
         self.operateButtonManager = entities.BuManager(game)
         self.towerNum = 0
         self.game = game
         self.ifOperating = False
-        self.selectedTower = None
+        self.selectedTower: Tower | None = None
         self.numBases = len(game.map.towerBaseList)
         for pos in game.map.towerBaseList:
             self.towerList.append(Base(pos, self.game))
@@ -70,7 +76,9 @@ class ToManager:
             self.selectedTower = tower
             tower.ifSelected = True
 
-    def create_operateButtons(self):
+    def create_operateButtons(self) -> None:
+        if not self.selectedTower:
+            return
         if self.selectedTower.ifUpgradeable:
             for num in range(len(towerUpgradeIndex[self.selectedTower.towerType])):
                 self.operateButtonManager.buttonList.append(
@@ -129,9 +137,10 @@ class ToManager:
     def clear_to_list(self):
         self.towerList.clear()
 
-    def quit_operatingmode(self):
+    def quit_operatingmode(self) -> None:
         self.operateButtonManager.clear_bu_list()
-        self.selectedTower.ifSelected = False
+        if self.selectedTower:
+            self.selectedTower.ifSelected = False
         self.ifOperating = False
         self.selectedTower = None
 
@@ -152,7 +161,7 @@ class Tower:
         self.ifSelected = False
         # attack and search
         self.ifFoundTarget = False
-        self.target = None
+        self.target: Enemy | None = None
         # img
         self.screen = game.screen
         self.to_set()
@@ -187,11 +196,13 @@ class Tower:
         self.screen.blit(self.img, self.img_rect)
         pygame.draw.rect(self.screen, (0, 255, 0), self.hitbox, 1)
         if self.ifSelected:
-            if self.ifFoundTarget:
+            if self.ifFoundTarget and self.target is not None:
                 pygame.draw.line(self.screen, (0, 0, 255), self.pos, self.target.pos)
             pygame.draw.circle(self.screen, (0, 0, 255), self.pos, self.searchRange, 1)
 
-    def to_attack(self):
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
         routeIndex = self.target.routeIndex
         time = round(
             dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_ARROW
@@ -202,13 +213,16 @@ class Tower:
         self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False
 
-    def to_search(self, enemyList):
+    def to_search(self, enemyList: list[Enemy]) -> None:
         self.ifFoundTarget = False
         for enemy in enemyList:
             dis = dist(self.pos, enemy.pos)
             if dis < self.searchRange:
                 if self.ifFoundTarget:
-                    if self.target.location > enemy.location:
+                    if (
+                        self.target is not None
+                        and self.target.location > enemy.location
+                    ):
                         pass
                     else:
                         self.target = enemy
@@ -228,7 +242,8 @@ class Tower:
 
 
 class Base(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # basic data
         self.prepInterval = c.TO_INTERVAL_D
         self.ammo = None
@@ -238,15 +253,18 @@ class Base(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    def to_search(self):
+    @override
+    def to_search(self, enemyList: list[Enemy]) -> None:
         pass
 
-    def to_attack(self):
+    @override
+    def to_attack(self) -> None:
         pass
 
 
 class TestTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_D
         self.ammo = c.AmmoType.ARROW
@@ -259,7 +277,8 @@ class TestTower(Tower):
 
 
 class ArcherTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_ARCHER
         self.ammo = c.AmmoType.ARROW
@@ -272,7 +291,8 @@ class ArcherTower(Tower):
 
 
 class CannonTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_CANNON
         self.ammo = c.AmmoType.CANNONBALL
@@ -283,7 +303,10 @@ class CannonTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    def to_attack(self):
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
         routeIndex = self.target.routeIndex
         time = round(
             dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_CANNONBALL
@@ -296,7 +319,8 @@ class CannonTower(Tower):
 
 
 class WizardTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_WIZARD
         self.ammo = c.AmmoType.BEAM
@@ -307,7 +331,10 @@ class WizardTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    def to_attack(self):
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
         routeIndex = self.target.routeIndex
         time = round(dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BEAM)
         destLoc = self.target.location + time * self.target.speed
@@ -318,7 +345,8 @@ class WizardTower(Tower):
 
 
 class MarksmanTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_MARKSMAN
         self.ammo = c.AmmoType.ARROW
@@ -331,7 +359,8 @@ class MarksmanTower(Tower):
 
 
 class SniperTower(Tower):
-    def to_set(self):
+    @override
+    def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_SNIPER
         self.ammo = c.AmmoType.BULLET
@@ -342,7 +371,10 @@ class SniperTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(-0, -30)
 
-    def to_attack(self):
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
         routeIndex = self.target.routeIndex
         time = round(
             dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BULLET

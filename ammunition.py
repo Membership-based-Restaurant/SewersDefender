@@ -5,6 +5,7 @@ import constants as c
 from numpy import arctan2, pi, log
 from random import randint
 from math import cos, sin, dist
+from typing import override
 
 
 class AmManage:
@@ -102,6 +103,7 @@ class Ammo:
 
 
 class Arrow(Ammo):
+    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.ARROW)
         self.damage = c.AM_DAMAGE_ARROW
@@ -109,6 +111,7 @@ class Arrow(Ammo):
 
 
 class Bullet(Ammo):
+    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.BULLET)
         self.damage = c.AM_DAMAGE_BULLET
@@ -116,11 +119,13 @@ class Bullet(Ammo):
 
 
 class Beam(Ammo):
+    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.BEAM)
         self.damage = c.AM_DAMAGE_BEAM
         self.speed = c.AM_SPEED_BEAM
 
+    @override
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
@@ -140,11 +145,13 @@ class Beam(Ammo):
 
 
 class Cannonball(Ammo):
+    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_CANNONBALL
         self.speed = c.AM_SPEED_CANNONBALL
 
+    @override
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < c.AM_RANGE_CANNONBALL:

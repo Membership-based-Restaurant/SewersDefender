@@ -9,6 +9,7 @@ import maps
 import entities
 import constants as c
 import settings
+from typing import override
 
 
 class PaManager:
@@ -81,6 +82,7 @@ class Page:
 
 
 class Welcome(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkwe.png").convert_alpha()
         self.buttonManager.buttonList.append(
@@ -91,6 +93,7 @@ class Welcome(Page):
 
 
 class Select(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bks.png").convert_alpha()
         self.buttonManager.buttonList.append(
@@ -105,6 +108,7 @@ class Select(Page):
 
 
 class ConcludeWin(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkw.png").convert_alpha()
         self.buttonManager.buttonList.append(
@@ -118,6 +122,7 @@ class ConcludeWin(Page):
 
 
 class ConcludeLose(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkl.png").convert_alpha()
         self.buttonManager.buttonList.append(
@@ -131,6 +136,7 @@ class ConcludeLose(Page):
 
 
 class Pause(Page):
+    @override
     def pa_set(self):
         self.img = pygame.image.load("resources/bkp.png").convert_alpha()
         self.buttonManager.buttonList.append(
@@ -146,6 +152,7 @@ class Pause(Page):
 
 
 class Game(Page):
+    @override
     def pa_set(self):
         self.set_buttons()
         self.mapPath = ""
@@ -167,6 +174,7 @@ class Game(Page):
         self.ifExecuteTasks = False
         self.ifTaskEnd = False
 
+    @override
     def pa_run(self):
         pygame.display.set_caption("Gaming")
         self.check_event()

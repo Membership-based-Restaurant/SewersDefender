@@ -1,5 +1,4 @@
 import pygame
-import os
 import copy
 import json
 import constants as c
@@ -167,5 +166,5 @@ if __name__ == "__main__":
         if ifQuit:
             break
     m.get_info()
-    os.system("pause")
+    input("paused, enter to continue")
     m.save_map()
