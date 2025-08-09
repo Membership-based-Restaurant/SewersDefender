@@ -7,7 +7,7 @@ from constants import *
 
 class MapCreate:
     def __init__(self):
-        self.mapPath = 'maps/'
+        self.mapPath = 'game_maps/map1/'
         pygame.init()
         # img
         self.screen = pygame.display.set_mode((1200, 800))
@@ -25,17 +25,21 @@ class MapCreate:
                               60, SUMMON_CE, 60, SUMMON_CE, 60, SUMMON_CE,
                               60, SUMMON_CE, 60, SUMMON_CE, 60, SUMMON_CE,
                               60, SUMMON_AE, 60, SUMMON_AE, 60, SUMMON_AE,
+                              300, WAVE_END]],
+                            [[60, SUMMON_AE, 60, SUMMON_AE, 60, SUMMON_AE,
                               60, SUMMON_AE, 60, SUMMON_AE, 60, SUMMON_AE,
-                              60, SUMMON_AE, 60, SUMMON_AE, 60, SUMMON_AE,
                               60, SUMMON_RE, 60, SUMMON_RE, 60, SUMMON_RE,
                               60, SUMMON_RE, 60, SUMMON_RE, 60, SUMMON_RE,
-                              60, SUMMON_RE, 60, SUMMON_RE, 60, SUMMON_RE,
-                            # mapTaskList[waveNum][routeNum][taskLoc]=task
-                              WAVE_END]]]
+                              300, WAVE_END]],
+                            [[60, SUMMON_RE, 60, SUMMON_RE, 60, SUMMON_RE,
+                              60, SUMMON_RE, 60, SUMMON_RE, 300, SUMMON_BE,
+                              300, WAVE_END]]]
+        # mapTaskList[waveNum][routeNum][taskLoc]=task
         self.numRoutes = len(self.routeIndex)
         self.numWaves = len(self.mapTackList)
         self.towerBaseList = [(300, 350), (300, 450),
                               (600, 350), (600, 450), (900, 350), (900, 450)]
+        self.initialMoney = 500
         self.draw_map()
 
     def get_info(self):
@@ -45,11 +49,14 @@ class MapCreate:
         print('mapTaskList:', self.mapTackList)
         print('numWaves:', self.numWaves)
         print('towerBaseList:', self.towerBaseList)
+        print('initialMoney:', self.initialMoney)
 
     def draw_map(self):
         for routeNum in range(self.numRoutes):
             for location in self.routeIndex[routeNum]:
-                pygame.draw.circle(self.screen, (135, 95, 32), location, 30)
+                pygame.draw.circle(self.screen, (105, 74, 25), location, 30)
+            for location in self.routeIndex[routeNum]:
+                pygame.draw.circle(self.screen, (135, 95, 32), location, 27)
         pygame.display.flip()
         self.img = self.screen.copy()
 
@@ -62,9 +69,10 @@ class MapCreate:
                        'mapTaskList': self.mapTackList,
                        'numWaves': self.numWaves,
                        'towerBaseList': self.towerBaseList,
+                       'initialMoney': self.initialMoney
                        }
         try:
-            with open(f'{self.mapPath}/map.json', 'w', encoding='utf-8') as f:
+            with open(f'{self.mapPath}map.json', 'w', encoding='utf-8') as f:
                 json.dump(mapInfoDict, f, indent=4)
                 print('saved')
                 return True

@@ -4,7 +4,15 @@ import friends
 from math import dist
 from constants import *
 from numpy import arctan2
-towerUpgradeIndex = {TO_BASE: [TO_TEST, TO_CANNON, TO_ARCHER, TO_WIZARD]}
+towerUpgradeIndex = {TO_BASE: [TO_CANNON, TO_ARCHER, TO_WIZARD],
+                     TO_ARCHER: [TO_MARKSMAN, TO_SNIPER]}
+towerCostIndex = {TO_BASE: 0,
+                  TO_ARCHER: TO_COST_ARCHER,
+                  TO_CANNON: TO_COST_CANNON,
+                  TO_WIZARD: TO_COST_WIZARD,
+                  TO_SNIPER: TO_COST_SNIPER,
+                  TO_MARKSMAN: TO_COST_MARKSMAN,
+                  }
 
 
 class ToManager:
@@ -22,14 +30,19 @@ class ToManager:
     def create_tower(self, pos: tuple, type: int):
         if type == TO_ARCHER:
             self.towerList.append(ArcherTower(pos, self.game))
-        if type == TO_CANNON:
+        elif type == TO_CANNON:
             self.towerList.append(CannonTower(pos, self.game))
-        if type == TO_WIZARD:
+        elif type == TO_WIZARD:
             self.towerList.append(WizardTower(pos, self.game))
+        elif type == TO_MARKSMAN:
+            self.towerList.append(MarksmanTower(pos, self.game))
+        elif type == TO_SNIPER:
+            self.towerList.append(SniperTower(pos, self.game))
         # test
         if type == TO_TEST:
             self.towerList.append(TestTower(pos, self.game))
         print(f"tower at:{str(pos)} starts working")
+        self.game.map.money -= towerCostIndex[type]
         self.towerNum += 1
 
     def search_tower(self, pos: tuple, mode=COMMON):
@@ -76,9 +89,13 @@ class ToManager:
                 self.selectedTower = t
 
     def upgrade_tower(self, tower, num: int):
-        tower.ifSelected = False
         if not tower.towerType in towerUpgradeIndex:
             return
+        if towerCostIndex[towerUpgradeIndex[tower.towerType][num]] > self.game.map.money:
+            self.game.messageManager.create_message(
+                'Not enough money', tower.pos, 20)
+            return
+        tower.ifSelected = False
         tower.ifWorking = False  # stop old tower
         tower.to_reset()
         newTowerPos = tower.pos
@@ -172,9 +189,9 @@ class Tower:
         routeIndex = self.target.routeIndex
         time = round(
             dist(self.pos, routeIndex[self.target.location])/AM_SPEED_ARROW)
-        destLoc = self.target.location+time
-        if destLoc > len(routeIndex):
-            destLoc = len(routeIndex)
+        destLoc = self.target.location+time*self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex)-1
         self.game.ammoManager.create_ammo(
             self.pos, routeIndex[destLoc], self.ammo)
         self.ifReady = False
@@ -260,6 +277,17 @@ class CannonTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
+    def to_attack(self):
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_CANNONBALL)
+        destLoc = self.target.location+time*self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex)-1
+        self.game.ammoManager.create_ammo(
+            self.pos, routeIndex[destLoc], self.ammo)
+        self.ifReady = False
+
 
 class WizardTower(Tower):
     def to_set(self):
@@ -272,3 +300,51 @@ class WizardTower(Tower):
         # img
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    def to_attack(self):
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_BEAM)
+        destLoc = self.target.location+time*self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex)-1
+        self.game.ammoManager.create_ammo(
+            self.pos, routeIndex[destLoc], self.ammo)
+        self.ifReady = False
+
+
+class MarksmanTower(Tower):
+    def to_set(self):
+        # attack
+        self.prepInterval = TO_INTERVAL_MARKSMAN
+        self.ammo = AM_ARROW
+        self.searchRange = TO_RANGE_MARKSMAN
+        self.accuracy = 1
+        self.towerType = TO_MARKSMAN
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-0, -30)
+
+
+class SniperTower(Tower):
+    def to_set(self):
+        # attack
+        self.prepInterval = TO_INTERVAL_SNIPER
+        self.ammo = AM_BULLET
+        self.searchRange = TO_RANGE_SNIPER
+        self.accuracy = 1
+        self.towerType = TO_SNIPER
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(-0, -30)
+
+    def to_attack(self):
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location])/AM_SPEED_BULLET)
+        destLoc = self.target.location+time*self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex)-1
+        self.game.ammoManager.create_ammo(
+            self.pos, routeIndex[destLoc], self.ammo)
+        self.ifReady = False

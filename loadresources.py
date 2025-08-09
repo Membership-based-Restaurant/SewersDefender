@@ -14,6 +14,8 @@ class ImgRes():
             "resources/commonEnemy.png").convert_alpha()
         self.REimg = pygame.image.load(
             "resources/rapidEnemy.png").convert_alpha()
+        self.BEimg = pygame.image.load(
+            "resources/bossEnemy.png").convert_alpha()
         # tower
         self.ATimg = pygame.image.load(
             "resources/archerTower.png").convert_alpha()
@@ -23,28 +25,35 @@ class ImgRes():
             "resources/cannonTower.png").convert_alpha()
         self.BTimg = pygame.image.load(
             "resources/baseTower.png").convert_alpha()
+        self.MTimg = pygame.image.load(
+            "resources/marksmanTower.png").convert_alpha()
+        self.STimg = pygame.image.load(
+            "resources/sniperTower.png").convert_alpha()
         # test
         self.TEimg = pygame.image.load("resources/fy.png").convert_alpha()
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
         # entity
         self.FETimg = pygame.image.load("resources/finish.png").convert_alpha()
         self.DBUimg = pygame.image.load("resources/delete.png").convert_alpha()
-
         # ammo
         self.AAMimg = pygame.image.load("resources/arrow.png")
         self.BAMimg = pygame.image.load("resources/beam.png")
         self.CAMimg = pygame.image.load("resources/cannonball.png")
+        self.BuAMimg = pygame.image.load("resources/bullet.png")
         # dict
         self.imgDict = {EM_ARMORED: self.AEimg,
                         EM_COMMON: self.CEimg,
                         EM_RAPID: self.REimg,
                         EM_TEST: self.TEimg,
+                        EM_BOSS: self.BEimg,
 
                         TO_ARCHER: self.ATimg,
                         TO_WIZARD: self.WTimg,
                         TO_CANNON: self.GTimg,
                         TO_TEST: self.TTimg,
                         TO_BASE: self.BTimg,
+                        TO_SNIPER: self.STimg,
+                        TO_MARKSMAN: self.MTimg,
 
                         ET_FINISH: self.FETimg,
                         BU_TO_DELETE: self.DBUimg,
@@ -52,6 +61,7 @@ class ImgRes():
                         AM_ARROW: self.AAMimg,
                         AM_BEAM: self.BAMimg,
                         AM_CANNONBALL: self.CAMimg,
+                        AM_BULLET: self.BuAMimg,
                         }
 
     def get_img(self, type: int):

@@ -1,3 +1,4 @@
+import sys
 import pygame
 import towers
 from constants import *
@@ -49,16 +50,17 @@ class FinManager():
 
 
 class Message():
-    def __init__(self, screen: pygame.Surface, info: str, pos: tuple, size: int):
+    def __init__(self, screen: pygame.Surface, info: str, pos: tuple, size: int, color=(255, 0, 0), remaingTime=ME_R_TIME_D):
         self.screen = screen
         font = pygame.font.Font('resources/FanwoodText-Regular.ttf', size)
-        self.img = font.render(info, True, (255, 0, 0))
+        self.img = font.render(info, True, color)
         self.img_rect = self.img.get_rect()
         self.img_rect.center = pos
+        self.remainingTime = remaingTime
         self.me_set()
 
     def me_set(self):
-        self.remainingTime = ME_R_TIME_D
+        pass
 
     def me_blit(self):
         self.screen.blit(self.img, self.img_rect)
@@ -70,9 +72,9 @@ class MeManager():
         self.game = game
         self.messageList = []
 
-    def create_message(self, info: str, pos: tuple, size: int):
+    def create_message(self, info: str, pos: tuple, size: int, color=(255, 0, 0)):
         self.messageList.append(
-            Message(self.game.screen, info, pos, size*ME_SCALE_COEF))
+            Message(self.game.screen, info, pos, size, color))
 
     def manage_me_list(self):
         temptList = []
@@ -105,18 +107,35 @@ class Button(Entity):
 class TaskStartButton(Button):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
         wordImg = font.render("Start", True, (239, 228, 176))
         self.img = pygame.Surface(
-            (wordImg.get_width()+10, wordImg.get_height()+10))
+            (wordImg.get_width()+20, wordImg.get_height()+10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
-        self.img.blit(wordImg, (5, 5))
+        self.img.blit(wordImg, (10, 10))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
     def bu_work(self):
         self.ifLiving = False
         self.page.ifExecuteTasks = True
+
+
+class ExitButton(Button):
+    def et_set(self):
+        font = pygame.font.Font(
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        wordImg = font.render("Exit", True, (239, 228, 176))
+        self.img = pygame.Surface(
+            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+    def bu_work(self):
+        pygame.quit()
+        sys.exit()
 
 
 class TowerDeleteButton(Button):
@@ -160,7 +179,8 @@ class UpgradeButton(Button):
     def et_set(self):
         temptImg = self.game.res.get_img(
             towers.towerUpgradeIndex[self.type][self.num])
-        self.img = pygame.transform.scale(temptImg, (UP_WIDTH, UP_WIDTH))
+        self.img = pygame.transform.scale(temptImg.subsurface(
+            (pygame.Rect(0, 0, 50, 50))), (UP_WIDTH, UP_WIDTH))
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
     def bu_work(self):
@@ -189,8 +209,8 @@ class PageChangeButton(Button):
 class EnterButton(PageChangeButton):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
-        wordImg = font.render("Enter", True, (239, 228, 176))
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        wordImg = font.render("Game", True, (239, 228, 176))
         self.img = pygame.Surface(
             (wordImg.get_width()+20, wordImg.get_height()+10))
         self.img.fill((135, 75, 24))
@@ -202,7 +222,7 @@ class EnterButton(PageChangeButton):
 class GamePauseButton(PageChangeButton):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
         wordImg = font.render("Pause", True, (239, 228, 176))
         self.img = pygame.Surface(
             (wordImg.get_width()+20, wordImg.get_height()+10))
@@ -215,7 +235,7 @@ class GamePauseButton(PageChangeButton):
 class GameRestartButton(PageChangeButton):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
         wordImg = font.render("Replay", True, (239, 228, 176))
         self.img = pygame.Surface(
             (wordImg.get_width()+20, wordImg.get_height()+10))
@@ -234,7 +254,7 @@ class GameRestartButton(PageChangeButton):
 class GameContinueButton(PageChangeButton):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
         wordImg = font.render("Continue", True, (239, 228, 176))
         self.img = pygame.Surface(
             (wordImg.get_width()+20, wordImg.get_height()+10))
@@ -247,7 +267,7 @@ class GameContinueButton(PageChangeButton):
 class BackButton(PageChangeButton):
     def et_set(self):
         font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_HEIGHT)
+            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
         wordImg = font.render("Back", True, (239, 228, 176))
         self.img = pygame.Surface(
             (wordImg.get_width()+20, wordImg.get_height()+10))

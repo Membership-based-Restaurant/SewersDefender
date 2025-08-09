@@ -8,6 +8,7 @@ taskType = [SUMMON_TE,
             SUMMON_CE,
             SUMMON_AE,
             SUMMON_RE,
+            SUMMON_BE,
             WAVE_END,
             ]
 
@@ -31,6 +32,7 @@ class Map:
         for pos in finishPosList:
             self.finishManager.create_finish(pos)
         self.towerBaseList = mapInfoDict['towerBaseList']
+        self.money = mapInfoDict['initialMoney']
         self.numWaves = len(self.mapTaskList)  # num of waves
         self.numRoutes = len(self.routeIndex)  # num of routes
         # img

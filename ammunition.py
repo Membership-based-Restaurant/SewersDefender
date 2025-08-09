@@ -2,6 +2,8 @@ import pygame
 from constants import *
 from numpy import arctan2
 from numpy import pi
+from numpy import log
+from random import randint
 from math import cos, sin, dist
 
 
@@ -13,10 +15,12 @@ class AmManage():
     def create_ammo(self, startPos: tuple, targetPos: tuple, type=AM_ARROW):
         if type == AM_ARROW:
             self.ammoList.append(Arrow(startPos, targetPos, self.game))
-        if type == AM_BEAM:
+        elif type == AM_BEAM:
             self.ammoList.append(Beam(startPos, targetPos, self.game))
-        if type == AM_CANNONBALL:
+        elif type == AM_CANNONBALL:
             self.ammoList.append(Cannonball(startPos, targetPos, self.game))
+        elif type == AM_BULLET:
+            self.ammoList.append(Bullet(startPos, targetPos, self.game))
 
     def manage_am_list(self):
         temptList = []
@@ -71,14 +75,15 @@ class Ammo():
             if enemy.hitbox.collidepoint(self.targetPos):
                 damage = 0
                 if self.damage > enemy.physicalDefence:
-                    damage = self.damage-enemy.physicalDefence
+                    damage = self.damage-enemy.physicalDefence  # example
                 else:
                     pass
                 enemy.hp -= damage
-                self.game.messageManager.create_message(f'-{str(damage)}',
-                                                        (enemy.pos[0]+enemy.speed,
-                                                         enemy.img_rect.top),
-                                                        damage)
+                if damage >= 1:
+                    self.game.messageManager.create_message(f'-{str(damage)}',
+                                                            (self.targetPos[0],
+                                                             self.targetPos[1]-randint(20, 30)),
+                                                            self.get_word_size(damage))
                 break
 
     def am_blit(self):
@@ -87,12 +92,22 @@ class Ammo():
         rotatedImg_rect.center = self.pos
         self.screen.blit(rotatedImg, rotatedImg_rect)
 
+    def get_word_size(self, num: int):
+        return int(4*log(8*num))
+
 
 class Arrow(Ammo):
     def am_set(self):
         self.img = self.game.res.get_img(AM_ARROW)
         self.damage = AM_DAMAGE_ARROW
         self.speed = AM_SPEED_ARROW
+
+
+class Bullet(Ammo):
+    def am_set(self):
+        self.img = self.game.res.get_img(AM_BULLET)
+        self.damage = AM_DAMAGE_BULLET
+        self.speed = AM_SPEED_BULLET
 
 
 class Beam(Ammo):
@@ -110,10 +125,11 @@ class Beam(Ammo):
                 else:
                     pass
                 enemy.hp -= damage
-                self.game.messageManager.create_message(f'-{str(damage)}',
-                                                        (enemy.pos[0]+enemy.speed,
-                                                         enemy.img_rect.top),
-                                                        damage)
+                if damage >= 1:
+                    self.game.messageManager.create_message(f'-{str(damage)}',
+                                                            (self.targetPos[0],
+                                                             self.targetPos[1]-randint(20, 30)),
+                                                            self.get_word_size(damage))
                 break
 
 
@@ -132,7 +148,8 @@ class Cannonball(Ammo):
                 else:
                     pass
                 enemy.hp -= damage
-                self.game.messageManager.create_message(f'-{str(damage)}',
-                                                        (enemy.pos[0]+enemy.speed,
-                                                         enemy.img_rect.top),
-                                                        damage)
+                if damage >= 1:
+                    self.game.messageManager.create_message(f'-{str(damage)}',
+                                                            (self.targetPos[0],
+                                                             self.targetPos[1]-randint(20, 30)),
+                                                            self.get_word_size(damage))
