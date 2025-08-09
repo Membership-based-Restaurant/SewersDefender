@@ -48,7 +48,7 @@ class MapCreate:
                     60,
                     c.SummonType.ARMORED,
                     300,
-                    c.SummonType.END,
+                    c.TaskEvent.END,
                 ]
             ],
             [
@@ -78,7 +78,7 @@ class MapCreate:
                     60,
                     c.SummonType.RAPID,
                     300,
-                    c.SummonType.END,
+                    c.TaskEvent.END,
                 ]
             ],
             [
@@ -96,7 +96,7 @@ class MapCreate:
                     300,
                     c.SummonType.BOSS,
                     300,
-                    c.SummonType.END,
+                    c.TaskEvent.END,
                 ]
             ],
         ]

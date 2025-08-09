@@ -216,17 +216,14 @@ class Game(Page):
         taskDict = self.map.get_task_dict(c.MapTaskType.UPDATE)
         if not taskDict:
             return
-        if c.END in taskDict.values():
+        if taskDict.get(0) == c.TaskEvent.END and len(taskDict) == 1:
             self.ifExecuteTasks = False
             self.ifTaskEnd = True
-        else:
-            for routeNum in range(self.map.numRoutes):
-                if routeNum in taskDict.keys():
-                    task = taskDict[routeNum]
-                    if task == c.REST:
-                        pass
-                    else:
-                        self.enemyManager.create_enemy(c.SummonType(task), routeNum)
+            return
+        for routeNum, task in taskDict.items():
+            if isinstance(task, c.TaskEvent):
+                continue
+            self.enemyManager.create_enemy(task, routeNum)
 
     def judge_game(self):
         if self.map.finishManager.if_lose():

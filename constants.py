@@ -135,15 +135,15 @@ class PageType(IntEnum):
 
 class SummonType(IntEnum):
     TEST = 0
-    END = -1
-    COMMON = auto()
-    ARMORED = auto()
-    RAPID = auto()
-    BOSS = auto()
+    COMMON = 1
+    ARMORED = 2
+    RAPID = 3
+    BOSS = 4
 
 
-END = -10
-REST = -12
+class TaskEvent(IntEnum):
+    REST = -12
+    END = -11
 
 
 class MapTaskType(IntEnum):
@@ -152,6 +152,6 @@ class MapTaskType(IntEnum):
 
 
 class GameJudge(IntEnum):
-    WIN = -2
-    LOSE = -1
-    UNDECIDED = -3
+    WIN = auto()
+    LOSE = auto()
+    UNDECIDED = auto()

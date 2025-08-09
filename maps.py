@@ -3,6 +3,7 @@ import copy
 import json
 import entities
 import constants as c
+from typing import Mapping
 
 taskType = [
     c.SummonType.TEST,
@@ -10,7 +11,7 @@ taskType = [
     c.SummonType.ARMORED,
     c.SummonType.RAPID,
     c.SummonType.BOSS,
-    c.SummonType.END,
+    c.TaskEvent.END,
 ]
 
 
@@ -49,26 +50,29 @@ class Map:
 
     def get_task_dict(
         self, type: c.MapTaskType = c.MapTaskType.UPDATE
-    ) -> dict[int, int] | None:
+    ) -> Mapping[int, c.SummonType | c.TaskEvent] | None:
         if type == c.MapTaskType.UPDATE:
-            taskDict = self.mapWaveList[self.currentWave].generate_task_dict()
+            taskDict: Mapping[int, c.SummonType | c.TaskEvent] = (
+                self.mapWaveList[self.currentWave].generate_task_dict()
+            )
             if not taskDict:
                 if self.currentWave < self.numWaves - 1:
                     self.currentWave += 1
                     taskDict = self.mapWaveList[self.currentWave].generate_task_dict()
                 else:
                     print("task finished")
-                    taskDict = {0: c.END}
+                    taskDict = {0: c.TaskEvent.END}
             return taskDict
         elif type == c.MapTaskType.RESET:
             self.reset()
+            return None
 
     def map_blit(self):
         self.screen.blit(self.img, self.screen_rect)
 
     def reset(self):
         for wave in self.mapWaveList:
-            wave.wa_rest()
+            wave.reset()
         self.currentWave = 0
 
     def clear_list(self):
@@ -83,16 +87,18 @@ class Wave:
         for routeNum in range(self.numRoutes):
             self.waveTaskList.append(Task(routeNum, list[routeNum]))
 
-    def generate_task_dict(self):
-        taskDict = {}
+    def generate_task_dict(self) -> dict[int, c.SummonType | c.TaskEvent]:
+        taskDict: dict[int, c.SummonType | c.TaskEvent] = {}
         for task in self.waveTaskList:
             if task.ifEnd:
                 continue
-            else:
-                taskDict[task.routeNum] = task.ta_next()
+            result = task.ta_next()
+            if result == c.TaskEvent.END:
+                continue
+            taskDict[task.routeNum] = result
         return taskDict
 
-    def wa_tasks(self):
+    def reset(self):
         for task in self.waveTaskList:
             task.ta_reset()
 
@@ -114,28 +120,27 @@ class Task:
     def ta_set(self, list: list):
         self.routeTaskList = copy.copy(list)
 
-    def ta_next(self):
-        if not self.ifEnd:
-            if self.ifTaskPause:
-                self.taskTimer += 1
-                if self.taskTimer == self.taskInterval:
-                    self.taskInterval = 0
-                    self.ifTaskPause = False
-                    self.taskTimer = 1
-                    self.taskLoc += 1
-                return c.REST
-            task = self.routeTaskList[self.taskLoc]
-            if task in taskType:
-                if task == c.END:
-                    self.ifEnd = True
-                    return c.SummonType
-                else:
-                    self.taskLoc += 1
-                    return task
-            else:
-                self.taskInterval = task
-                self.ifTaskPause = True
-                return c.REST
+    def ta_next(self) -> c.SummonType | c.TaskEvent:
+        if self.ifEnd:
+            return c.TaskEvent.END
+        if self.ifTaskPause:
+            self.taskTimer += 1
+            if self.taskTimer == self.taskInterval:
+                self.taskInterval = 0
+                self.ifTaskPause = False
+                self.taskTimer = 1
+                self.taskLoc += 1
+            return c.TaskEvent.REST
+        task = self.routeTaskList[self.taskLoc]
+        if task in taskType:
+            if task == c.TaskEvent.END:
+                self.ifEnd = True
+                return c.TaskEvent.END
+            self.taskLoc += 1
+            return c.SummonType(task)
+        self.taskInterval = task
+        self.ifTaskPause = True
+        return c.TaskEvent.REST
 
     def ta_reset(self):
         self.taskLoc = 0
