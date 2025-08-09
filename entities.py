@@ -1,11 +1,12 @@
 import sys
 import pygame
 import towers
-from constants import *
+import constants as c
+from typing import override
 
 
 class Entity:
-    def __init__(self, page, pos: tuple):
+    def __init__(self, page, pos: tuple[int, int]):
         self.page = page
         self.screen = self.page.screen
         self.ifLiving = True
@@ -16,7 +17,7 @@ class Entity:
         self.hitbox.center = self.pos
 
     def et_set(self):
-        self.img = self.page.res.get_img(ET_FINISH)  # example
+        self.img = self.page.res.get_img(c.EntityType.FINISH)  # example
         self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
 
     def et_blit(self):
@@ -25,34 +26,44 @@ class Entity:
 
 
 class Finish(Entity):
+    @override
     def et_set(self):  # example
-        self.img = self.page.res.get_img(ET_FINISH)  # example
+        self.img = self.page.res.get_img(c.EntityType.FINISH)  # example
         self.hitbox = self.img.get_rect().inflate(-10, -10)  # example
 
 
-class FinManager():
+class FinManager:
     def __init__(self, game):
         self.game = game
-        self.finishList = []
+        self.finishList: list[Finish] = []
 
-    def create_finish(self, pos: int):
+    def create_finish(self, pos: tuple[int, int]) -> None:
         self.finishList.append(Finish(self.game, pos))
 
-    def if_lose(self):
+    def if_lose(self) -> bool:
         for finish in self.finishList:
             for enemy in self.game.enemyManager.enemyList:
                 if finish.hitbox.collidepoint(enemy.pos):
                     return True
+        return False
 
     def blit_fin_list(self):
         for finish in self.finishList:
             finish.et_blit()
 
 
-class Message():
-    def __init__(self, screen: pygame.Surface, info: str, pos: tuple, size: int, color=(255, 0, 0), remaingTime=ME_R_TIME_D):
+class Message:
+    def __init__(
+        self,
+        screen: pygame.Surface,
+        info: str,
+        pos: tuple,
+        size: int,
+        color=(255, 0, 0),
+        remaingTime=c.ME_R_TIME_D,
+    ):
         self.screen = screen
-        font = pygame.font.Font('resources/FanwoodText-Regular.ttf', size)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", size)
         self.img = font.render(info, True, color)
         self.img_rect = self.img.get_rect()
         self.img_rect.center = pos
@@ -67,14 +78,13 @@ class Message():
         self.remainingTime -= 1
 
 
-class MeManager():
+class MeManager:
     def __init__(self, game):
         self.game = game
         self.messageList = []
 
     def create_message(self, info: str, pos: tuple, size: int, color=(255, 0, 0)):
-        self.messageList.append(
-            Message(self.game.screen, info, pos, size, color))
+        self.messageList.append(Message(self.game.screen, info, pos, size, color))
 
     def manage_me_list(self):
         temptList = []
@@ -105,34 +115,34 @@ class Button(Entity):
 
 
 class TaskStartButton(Button):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Start", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 10))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
+    @override
     def bu_work(self):
         self.ifLiving = False
         self.page.ifExecuteTasks = True
 
 
 class ExitButton(Button):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Exit", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
+    @override
     def bu_work(self):
         pygame.quit()
         sys.exit()
@@ -141,8 +151,7 @@ class ExitButton(Button):
 class TowerDeleteButton(Button):
     def __init__(self, game, tower):
         self.game = game
-        self.pos = (tower.hitbox.centerx,
-                    tower.hitbox.bottom+int(UP_WIDTH/2))
+        self.pos = (tower.hitbox.centerx, tower.hitbox.bottom + int(c.UP_WIDTH / 2))
         self.screen = game.screen
         self.ifLiving = True
         self.et_set()
@@ -152,11 +161,13 @@ class TowerDeleteButton(Button):
         self.tower = tower
         self.type = tower.towerType
 
+    @override
     def et_set(self):
-        temptImg = self.game.res.get_img(BU_TO_DELETE)
-        self.img = pygame.transform.scale(temptImg, (UP_WIDTH, UP_WIDTH))
+        temptImg = self.game.res.get_img(c.ButtonType.TO_DELETE)
+        self.img = pygame.transform.scale(temptImg, (c.UP_WIDTH, c.UP_WIDTH))
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
+    @override
     def bu_work(self):
         self.game.towerManager.delete_tower(self.tower)
 
@@ -166,8 +177,10 @@ class UpgradeButton(Button):
         self.game = game
         self.type = tower.towerType
         self.num = num
-        self.pos = (tower.hitbox.left-int(UP_WIDTH/2),
-                    tower.hitbox.top+UP_WIDTH*num)
+        self.pos = (
+            tower.hitbox.left - int(c.UP_WIDTH / 2),
+            tower.hitbox.top + c.UP_WIDTH * num,
+        )
         self.screen = game.screen
         self.ifLiving = True
         self.et_set()
@@ -176,13 +189,15 @@ class UpgradeButton(Button):
         self.hitbox.center = self.pos
         self.tower = tower
 
+    @override
     def et_set(self):
-        temptImg = self.game.res.get_img(
-            towers.towerUpgradeIndex[self.type][self.num])
-        self.img = pygame.transform.scale(temptImg.subsurface(
-            (pygame.Rect(0, 0, 50, 50))), (UP_WIDTH, UP_WIDTH))
+        temptImg = self.game.res.get_img(towers.towerUpgradeIndex[self.type][self.num])
+        self.img = pygame.transform.scale(
+            temptImg.subsurface((pygame.Rect(0, 0, 50, 50))), (c.UP_WIDTH, c.UP_WIDTH)
+        )
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
+    @override
     def bu_work(self):
         self.game.towerManager.upgrade_tower(self.tower, self.num)
 
@@ -199,20 +214,21 @@ class PageChangeButton(Button):
         self.hitbox.center = self.pos
         self.destPage = destPage
 
+    @override
     def et_set(self):
         pass
 
+    @override
     def bu_work(self):
         self.pageManager.currentPage = self.destPage
 
 
 class EnterButton(PageChangeButton):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Game", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -220,12 +236,11 @@ class EnterButton(PageChangeButton):
 
 
 class GamePauseButton(PageChangeButton):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Pause", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -233,17 +248,17 @@ class GamePauseButton(PageChangeButton):
 
 
 class GameRestartButton(PageChangeButton):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Replay", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
+    @override
     def bu_work(self):
         self.destPage.set_game_resources()
         self.destPage.buttonManager.clear_bu_list()
@@ -252,12 +267,11 @@ class GameRestartButton(PageChangeButton):
 
 
 class GameContinueButton(PageChangeButton):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Continue", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -265,12 +279,11 @@ class GameContinueButton(PageChangeButton):
 
 
 class BackButton(PageChangeButton):
+    @override
     def et_set(self):
-        font = pygame.font.Font(
-            'resources/FanwoodText-Regular.ttf', WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Back", True, (239, 228, 176))
-        self.img = pygame.Surface(
-            (wordImg.get_width()+20, wordImg.get_height()+10))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
         self.img.fill((135, 75, 24))
         pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
         self.img.blit(wordImg, (10, 5))
@@ -292,9 +305,11 @@ class MapChooseButton(PageChangeButton):
         self.destPage = destPage
         self.path = mapPath
 
+    @override
     def et_set(self):
         pass
 
+    @override
     def bu_work(self):
         self.destPage.mapPath = self.path
         self.destPage.set_game_resources()
@@ -302,7 +317,7 @@ class MapChooseButton(PageChangeButton):
         self.pageManager.currentPage = self.destPage
 
 
-class BuManager():
+class BuManager:
     def __init__(self, page):
         self.page = page
         self.buttonList = []

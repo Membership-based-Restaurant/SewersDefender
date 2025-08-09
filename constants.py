@@ -1,8 +1,12 @@
-# ammo
-AM_ARROW = 301
-AM_BEAM = 302
-AM_CANNONBALL = 303
-AM_BULLET = 304
+from enum import IntEnum, auto
+
+
+class AmmoType(IntEnum):
+    ARROW = auto()
+    BEAM = auto()
+    CANNONBALL = auto()
+    BULLET = auto()
+
 
 AM_SPEED_D = 5
 AM_SPEED_ARROW = 10
@@ -19,12 +23,13 @@ AM_DAMAGE_BULLET = 25
 AM_RANGE_CANNONBALL = 100
 
 
-# enemy
-EM_TEST = 100
-EM_COMMON = 101
-EM_ARMORED = 102
-EM_RAPID = 103
-EM_BOSS = 104
+class EnemyType(IntEnum):
+    TEST = auto()
+    COMMON = auto()
+    ARMORED = auto()
+    RAPID = auto()
+    BOSS = auto()
+
 
 EM_REWARD_COMMON = 20
 EM_REWARD_ARMORED = 50
@@ -66,14 +71,16 @@ EM_DAMAGE_BOSS = 50
 EM_INTERVAL_BOSS = 300
 EM_BOSS_RECOVER = 100
 
-# tower
-TO_ARCHER = 2
-TO_CANNON = 3
-TO_WIZARD = 4
-TO_SNIPER = 5
-TO_MARKSMAN = 6
-TO_TEST = 1
-TO_BASE = 0
+
+class TowerType(IntEnum):
+    BASE = 0
+    TEST = auto()
+    ARCHER = auto()
+    CANNON = auto()
+    WIZARD = auto()
+    SNIPER = auto()
+    MARKSMAN = auto()
+
 
 TO_COST_ARCHER = 20
 TO_COST_CANNON = 100
@@ -101,45 +108,50 @@ COMMON = 10
 UPGRADE = 11
 
 
-# entity
-ET_FINISH = 200
+class EntityType(IntEnum):
+    FINISH = 200
 
-BU_TO_DELETE = 201
-BU_BACK = 202
-BU_PAUSE = 203
-BU_ENTER = 204
+
+class ButtonType(IntEnum):
+    TO_DELETE = 201
+    BACK = 202
+    PAUSE = 203
+    ENTER = 204
+
 
 ME_SCALE_COEF = 2
 ME_R_TIME_D = 30
 WORD_SIZE = 50
 
-# page
-PA_WELCOME = 0
-PA_SELECT = 1
-PA_PAUSE = 2
-PA_CONCLUDE_WIN = 3
-PA_CONCLUDE_LOSE = 4
-PA_GAME = 5
+
+class PageType(IntEnum):
+    WELCOME = 0
+    SELECT = auto()
+    PAUSE = auto()
+    CONCLUDE_WIN = auto()
+    CONCLUDE_LOSE = auto()
+    GAME = auto()
 
 
-# task
-SUMMON_TE = 0
-SUMMON_CE = 1
-SUMMON_AE = 2
-SUMMON_RE = 3
-SUMMON_BE = 4
-
-WAVE_END = -11
-END = -10
-REST = -12
+class SummonType(IntEnum):
+    TEST = 0
+    COMMON = 1
+    ARMORED = 2
+    RAPID = 3
+    BOSS = 4
 
 
-# map_task
-RESET = -13
-UPDATE = -14
+class TaskEvent(IntEnum):
+    REST = -12
+    END = -11
 
 
-# gamejudge
-WIN = -2
-LOSE = -1
-UNDECIDED = -3
+class MapTaskType(IntEnum):
+    RESET = -13
+    UPDATE = -14
+
+
+class GameJudge(IntEnum):
+    WIN = auto()
+    LOSE = auto()
+    UNDECIDED = auto()
