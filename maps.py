@@ -2,15 +2,15 @@ import pygame
 import copy
 import json
 import entities
-from constants import *
+import constants as c
 
 taskType = [
-    SUMMON_TE,
-    SUMMON_CE,
-    SUMMON_AE,
-    SUMMON_RE,
-    SUMMON_BE,
-    WAVE_END,
+    c.SummonType.TEST,
+    c.SummonType.COMMON,
+    c.SummonType.ARMORED,
+    c.SummonType.RAPID,
+    c.SummonType.BOSS,
+    c.WAVE_END,
 ]
 
 
@@ -47,8 +47,10 @@ class Map:
         for waveNum in range(self.numWaves):
             self.mapWaveList.append(Wave(self.numRoutes, self.mapTaskList[waveNum]))
 
-    def get_task_dict(self, type=UPDATE):
-        if type == UPDATE:
+    def get_task_dict(
+        self, type: c.MapTaskType = c.MapTaskType.UPDATE
+    ) -> dict[int, int] | None:
+        if type == c.MapTaskType.UPDATE:
             taskDict = self.mapWaveList[self.currentWave].generate_task_dict()
             if not taskDict:
                 if self.currentWave < self.numWaves - 1:
@@ -56,9 +58,9 @@ class Map:
                     taskDict = self.mapWaveList[self.currentWave].generate_task_dict()
                 else:
                     print("task finished")
-                    taskDict = {0: END}
+                    taskDict = {0: c.END}
             return taskDict
-        elif type == RESET:
+        elif type == c.MapTaskType.RESET:
             self.reset()
 
     def map_blit(self):
@@ -121,19 +123,19 @@ class Task:
                     self.ifTaskPause = False
                     self.taskTimer = 1
                     self.taskLoc += 1
-                return REST
+                return c.REST
             task = self.routeTaskList[self.taskLoc]
             if task in taskType:
-                if task == WAVE_END:
+                if task == c.WAVE_END:
                     self.ifEnd = True
-                    return WAVE_END
+                    return c.WAVE_END
                 else:
                     self.taskLoc += 1
                     return task
             else:
                 self.taskInterval = task
                 self.ifTaskPause = True
-                return REST
+                return c.REST
 
     def ta_reset(self):
         self.taskLoc = 0

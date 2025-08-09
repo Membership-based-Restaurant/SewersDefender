@@ -7,7 +7,7 @@ import towers
 import ammunition
 import maps
 import entities
-from constants import *
+import constants as c
 import settings
 
 
@@ -175,9 +175,9 @@ class Game(Page):
         self.update_entities()
         self.update_screen()
         flag = self.judge_game()
-        if flag == WIN:
+        if flag == c.GameJudge.WIN:
             self.pageManager.currentPage = self.pageManager.concludeWin
-        elif flag == LOSE:
+        elif flag == c.GameJudge.LOSE:
             self.pageManager.currentPage = self.pageManager.concludeLose
         else:
             pass
@@ -205,25 +205,27 @@ class Game(Page):
         pygame.event.pump()
 
     def execute_task(self):
-        taskDict = self.map.get_task_dict(UPDATE)
-        if END in taskDict.values():
+        taskDict = self.map.get_task_dict(c.MapTaskType.UPDATE)
+        if not taskDict:
+            return
+        if c.END in taskDict.values():
             self.ifExecuteTasks = False
             self.ifTaskEnd = True
         else:
             for routeNum in range(self.map.numRoutes):
                 if routeNum in taskDict.keys():
                     task = taskDict[routeNum]
-                    if task == REST:
+                    if task == c.REST:
                         pass
                     else:
-                        self.enemyManager.create_enemy(task, routeNum)
+                        self.enemyManager.create_enemy(c.SummonType(task), routeNum)
 
     def judge_game(self):
         if self.map.finishManager.if_lose():
-            return LOSE
+            return c.GameJudge.LOSE
         if self.ifTaskEnd and len(self.enemyManager.enemyList) == 0:
-            return WIN
-        return UNDECIDED
+            return c.GameJudge.WIN
+        return c.GameJudge.UNDECIDED
 
     def update_entities(self):
         self.enemyManager.manage_en_list()
@@ -232,7 +234,7 @@ class Game(Page):
         self.messageManager.manage_me_list()
 
     def blit_info(self):
-        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", WORD_SIZE)
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         temptImg1 = font.render(
             f"Money:{self.map.money:d}".format(), True, (239, 228, 176)
         )

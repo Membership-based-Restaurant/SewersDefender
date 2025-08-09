@@ -1,6 +1,7 @@
 import pygame
 import sys
-from constants import *
+from typing import Union
+import constants as c
 
 
 class ImgRes:
@@ -32,28 +33,37 @@ class ImgRes:
         self.BuAMimg = pygame.image.load("resources/bullet.png")
         # dict
         self.imgDict = {
-            EM_ARMORED: self.AEimg,
-            EM_COMMON: self.CEimg,
-            EM_RAPID: self.REimg,
-            EM_TEST: self.TEimg,
-            EM_BOSS: self.BEimg,
-            TO_ARCHER: self.ATimg,
-            TO_WIZARD: self.WTimg,
-            TO_CANNON: self.GTimg,
-            TO_TEST: self.TTimg,
-            TO_BASE: self.BTimg,
-            TO_SNIPER: self.STimg,
-            TO_MARKSMAN: self.MTimg,
-            ET_FINISH: self.FETimg,
-            BU_TO_DELETE: self.DBUimg,
-            AM_ARROW: self.AAMimg,
-            AM_BEAM: self.BAMimg,
-            AM_CANNONBALL: self.CAMimg,
-            AM_BULLET: self.BuAMimg,
+            c.EnemyType.ARMORED: self.AEimg,
+            c.EnemyType.COMMON: self.CEimg,
+            c.EnemyType.RAPID: self.REimg,
+            c.EnemyType.TEST: self.TEimg,
+            c.EnemyType.BOSS: self.BEimg,
+            c.TowerType.ARCHER: self.ATimg,
+            c.TowerType.WIZARD: self.WTimg,
+            c.TowerType.CANNON: self.GTimg,
+            c.TowerType.TEST: self.TTimg,
+            c.TowerType.BASE: self.BTimg,
+            c.TowerType.SNIPER: self.STimg,
+            c.TowerType.MARKSMAN: self.MTimg,
+            c.EntityType.FINISH: self.FETimg,
+            c.ButtonType.TO_DELETE: self.DBUimg,
+            c.AmmoType.ARROW: self.AAMimg,
+            c.AmmoType.BEAM: self.BAMimg,
+            c.AmmoType.CANNONBALL: self.CAMimg,
+            c.AmmoType.BULLET: self.BuAMimg,
         }
 
-    def get_img(self, type: int):
-        return self.imgDict[type]
+    def get_img(
+        self,
+        sprite_type: Union[
+            c.EnemyType,
+            c.TowerType,
+            c.EntityType,
+            c.ButtonType,
+            c.AmmoType,
+        ],
+    ):
+        return self.imgDict[sprite_type]
 
 
 if __name__ == "__main__":
@@ -61,7 +71,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((400, 400))
     screen.fill((255, 255, 255))
     i = ImgRes()
-    img = i.get_img(BU_ENTER)
+    img = i.get_img(c.ButtonType.ENTER)
     screen.blit(img, (0, 0))
     pygame.display.flip()
     while True:

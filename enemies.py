@@ -1,27 +1,25 @@
 import pygame
-from constants import *
+import constants as c
 
 
 class EnManager:
     def __init__(self, game):
-        self.enemyList = []
+        self.enemyList: list[Enemy] = []
         self.enemyNum = 0
         self.enemyKilledNum = 0
         self.game = game
 
-    def create_enemy(self, type: int, routeNum: int):
-        # print('execute task:',type)
-        if type == SUMMON_CE:
+    def create_enemy(self, summon_type: c.SummonType, routeNum: int) -> bool:
+        if summon_type == c.SummonType.COMMON:
             self.enemyList.append(CommonEnemy(self.game, self.enemyNum, routeNum))
-        elif type == SUMMON_AE:
+        elif summon_type == c.SummonType.ARMORED:
             self.enemyList.append(ArmoredEnemy(self.game, self.enemyNum, routeNum))
-        elif type == SUMMON_RE:
+        elif summon_type == c.SummonType.RAPID:
             self.enemyList.append(RapidEnemy(self.game, self.enemyNum, routeNum))
-        elif type == SUMMON_BE:
+        elif summon_type == c.SummonType.BOSS:
             self.enemyList.append(BossEnemy(self.game, self.enemyNum, routeNum))
             print(1)
-        # test
-        elif type == SUMMON_TE:
+        elif summon_type == c.SummonType.TEST:
             self.enemyList.append(TestEnemy(self.game, self.enemyNum, routeNum))
         else:
             return False
@@ -36,7 +34,7 @@ class EnManager:
                 self.enemyKilledNum += 1
                 pass
             else:
-                if enemy.ifStuck == True:
+                if enemy.ifStuck:
                     enemy.en_attack()
                 else:
                     enemy.en_move()
@@ -80,16 +78,16 @@ class Enemy:
 
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_TEST)  # example
+        self.img = self.game.res.get_img(c.EnemyType.TEST)  # example
         # basic data
-        self.speed = EM_SPEED_D  # example
-        self.hp = EM_HP_D  # example
-        self.physicalDefence = EM_P_DEFENCE_D  # example
-        self.magicalDefence = EM_M_DEFENCE_D  # example
+        self.speed = c.EM_SPEED_D  # example
+        self.hp = c.EM_HP_D  # example
+        self.physicalDefence = c.EM_P_DEFENCE_D  # example
+        self.magicalDefence = c.EM_M_DEFENCE_D  # example
         self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
-        self.reward = EM_REWARD_COMMON  # example
+        self.reward = c.EM_REWARD_COMMON  # example
         # attack
-        self.damage = EM_DAMAGE_D  # example
+        self.damage = c.EM_DAMAGE_D  # example
 
     def en_move(self, temptSpeed=0):
         # move the enemy
@@ -112,9 +110,9 @@ class Enemy:
             self.screen,
             (255, 0, 0),
             (
-                self.hitbox.centerx - int(self.c_hp / 2 * EM_HP_COEF),
+                self.hitbox.centerx - int(self.c_hp / 2 * c.EM_HP_COEF),
                 self.hitbox.centery + 10,
-                int(self.c_hp * EM_HP_COEF),
+                int(self.c_hp * c.EM_HP_COEF),
                 3,
             ),
         )
@@ -122,9 +120,9 @@ class Enemy:
             self.screen,
             (0, 255, 0),
             (
-                self.hitbox.centerx - int(self.c_hp / 2 * EM_HP_COEF),
+                self.hitbox.centerx - int(self.c_hp / 2 * c.EM_HP_COEF),
                 self.hitbox.centery + 10,
-                int(self.hp * EM_HP_COEF),
+                int(self.hp * c.EM_HP_COEF),
                 3,
             ),
         )
@@ -139,16 +137,16 @@ class Enemy:
 class TestEnemy(Enemy):
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_TEST)
+        self.img = self.game.res.get_img(c.EnemyType.TEST)
         # basic data
-        self.speed = EM_SPEED_D
-        self.hp = EM_HP_D
-        self.physicalDefence = EM_P_DEFENCE_D
-        self.magicalDefence = EM_M_DEFENCE_D
+        self.speed = c.EM_SPEED_D
+        self.hp = c.EM_HP_D
+        self.physicalDefence = c.EM_P_DEFENCE_D
+        self.magicalDefence = c.EM_M_DEFENCE_D
         self.hitbox = self.img.get_rect().inflate(-10, -10)
-        self.reward = EM_REWARD_COMMON
+        self.reward = c.EM_REWARD_COMMON
         # attack
-        self.damage = EM_DAMAGE_D
+        self.damage = c.EM_DAMAGE_D
 
     def en_skill(self):
         pass
@@ -157,16 +155,16 @@ class TestEnemy(Enemy):
 class CommonEnemy(Enemy):
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_COMMON)
+        self.img = self.game.res.get_img(c.EnemyType.COMMON)
         # basic data
-        self.speed = EM_SPEED_COMMON
-        self.hp = EM_HP_COMMON
-        self.physicalDefence = EM_P_DEFENCE_COMMON
-        self.magicalDefence = EM_M_DEFENCE_COMMON
+        self.speed = c.EM_SPEED_COMMON
+        self.hp = c.EM_HP_COMMON
+        self.physicalDefence = c.EM_P_DEFENCE_COMMON
+        self.magicalDefence = c.EM_M_DEFENCE_COMMON
         self.hitbox = self.img.get_rect().inflate(-0, -0)
-        self.reward = EM_REWARD_COMMON
+        self.reward = c.EM_REWARD_COMMON
         # attack
-        self.damage = EM_DAMAGE_COMMON
+        self.damage = c.EM_DAMAGE_COMMON
 
     def en_skill(self):
         pass
@@ -175,16 +173,16 @@ class CommonEnemy(Enemy):
 class ArmoredEnemy(Enemy):
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_ARMORED)
+        self.img = self.game.res.get_img(c.EnemyType.ARMORED)
         # basic data
-        self.speed = EM_SPEED_ARMORED
-        self.hp = EM_HP_ARMORED
-        self.physicalDefence = EM_P_DEFENCE_ARMORED
-        self.magicalDefence = EM_M_DEFENCE_ARMORED
+        self.speed = c.EM_SPEED_ARMORED
+        self.hp = c.EM_HP_ARMORED
+        self.physicalDefence = c.EM_P_DEFENCE_ARMORED
+        self.magicalDefence = c.EM_M_DEFENCE_ARMORED
         self.hitbox = self.img.get_rect().inflate(-0, -0)
-        self.reward = EM_REWARD_ARMORED
+        self.reward = c.EM_REWARD_ARMORED
         # attack
-        self.damage = EM_DAMAGE_ARMORED
+        self.damage = c.EM_DAMAGE_ARMORED
 
     def en_skill(self):
         pass
@@ -193,16 +191,16 @@ class ArmoredEnemy(Enemy):
 class RapidEnemy(Enemy):
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_RAPID)
+        self.img = self.game.res.get_img(c.EnemyType.RAPID)
         # basic data
-        self.speed = EM_SPEED_RAPID
-        self.hp = EM_HP_RAPID
-        self.physicalDefence = EM_P_DEFENCE_RAPID
-        self.magicalDefence = EM_M_DEFENCE_RAPID
+        self.speed = c.EM_SPEED_RAPID
+        self.hp = c.EM_HP_RAPID
+        self.physicalDefence = c.EM_P_DEFENCE_RAPID
+        self.magicalDefence = c.EM_M_DEFENCE_RAPID
         self.hitbox = self.img.get_rect().inflate(-0, -0)
-        self.reward = EM_REWARD_RAPID
+        self.reward = c.EM_REWARD_RAPID
         # attack
-        self.damage = EM_DAMAGE_RAPID
+        self.damage = c.EM_DAMAGE_RAPID
 
     def en_skill(self):
         pass
@@ -211,26 +209,26 @@ class RapidEnemy(Enemy):
 class BossEnemy(Enemy):
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(EM_BOSS)
+        self.img = self.game.res.get_img(c.EnemyType.BOSS)
         # basic data
-        self.speed = EM_SPEED_BOSS
-        self.hp = EM_HP_BOSS
-        self.physicalDefence = EM_P_DEFENCE_BOSS
-        self.magicalDefence = EM_M_DEFENCE_BOSS
+        self.speed = c.EM_SPEED_BOSS
+        self.hp = c.EM_HP_BOSS
+        self.physicalDefence = c.EM_P_DEFENCE_BOSS
+        self.magicalDefence = c.EM_M_DEFENCE_BOSS
         self.hitbox = self.img.get_rect().inflate(-0, -0)
-        self.reward = EM_REWARD_BOSS
+        self.reward = c.EM_REWARD_BOSS
         # attack
-        self.damage = EM_DAMAGE_BOSS
-        self.skillInterval = EM_INTERVAL_BOSS
-        self.c_skillInterval = EM_INTERVAL_BOSS
+        self.damage = c.EM_DAMAGE_BOSS
+        self.skillInterval = c.EM_INTERVAL_BOSS
+        self.c_skillInterval = c.EM_INTERVAL_BOSS
 
     def en_skill(self):
         if self.skillInterval > 0:
             self.skillInterval -= 1
         else:
-            if self.c_hp - self.hp > EM_BOSS_RECOVER:
-                self.hp += EM_BOSS_RECOVER
+            if self.c_hp - self.hp > c.EM_BOSS_RECOVER:
+                self.hp += c.EM_BOSS_RECOVER
                 self.skillInterval = self.c_skillInterval
                 self.game.messageManager.create_message(
-                    f"+{str(EM_BOSS_RECOVER)}", self.pos, 30, (0, 255, 0)
+                    f"+{str(c.EM_BOSS_RECOVER)}", self.pos, 30, (0, 255, 0)
                 )

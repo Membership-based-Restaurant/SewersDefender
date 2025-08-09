@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import pygame
-from constants import *
-from numpy import arctan2
-from numpy import pi
-from numpy import log
+import constants as c
+from numpy import arctan2, pi, log
 from random import randint
 from math import cos, sin, dist
 
@@ -10,16 +10,21 @@ from math import cos, sin, dist
 class AmManage:
     def __init__(self, game):
         self.game = game
-        self.ammoList = []
+        self.ammoList: list[Ammo] = []
 
-    def create_ammo(self, startPos: tuple, targetPos: tuple, type=AM_ARROW):
-        if type == AM_ARROW:
+    def create_ammo(
+        self,
+        startPos: tuple[float, float],
+        targetPos: tuple[float, float],
+        ammo_type: c.AmmoType = c.AmmoType.ARROW,
+    ) -> None:
+        if ammo_type == c.AmmoType.ARROW:
             self.ammoList.append(Arrow(startPos, targetPos, self.game))
-        elif type == AM_BEAM:
+        elif ammo_type == c.AmmoType.BEAM:
             self.ammoList.append(Beam(startPos, targetPos, self.game))
-        elif type == AM_CANNONBALL:
+        elif ammo_type == c.AmmoType.CANNONBALL:
             self.ammoList.append(Cannonball(startPos, targetPos, self.game))
-        elif type == AM_BULLET:
+        elif ammo_type == c.AmmoType.BULLET:
             self.ammoList.append(Bullet(startPos, targetPos, self.game))
 
     def manage_am_list(self):
@@ -37,10 +42,10 @@ class AmManage:
         for ammo in self.ammoList:
             ammo.am_blit()
 
-    def clear_am_list(self):
+    def clear_ammo_list(self) -> None:
         self.ammoList.clear()
 
-    def reset(self):
+    def reset(self) -> None:
         self.clear_ammo_list()
 
 
@@ -55,15 +60,14 @@ class Ammo:
         self.am_set_angel()
 
     def am_set(self):
-        self.img = self.game.res.get_img(AM_ARROW)  # example
-        self.damage = AM_DAMAGE_D  # example
-        self.speed = AM_SPEED_D  # example
+        self.img = self.game.res.get_img(c.AmmoType.ARROW)  # example
+        self.damage = c.AM_DAMAGE_D  # example
+        self.speed = c.AM_SPEED_D  # example
 
     def am_set_angel(self):
-        x = [self.targetPos[0] - self.pos[0]]
-        y = [self.targetPos[1] - self.pos[1]]
-        self.angel = arctan2(y, x)
-        # print(self.angel)
+        x = self.targetPos[0] - self.pos[0]
+        y = self.targetPos[1] - self.pos[1]
+        self.angel = float(arctan2(y, x))
 
     def am_move(self):
         x = self.pos[0] + cos(self.angel) * self.speed
@@ -99,23 +103,23 @@ class Ammo:
 
 class Arrow(Ammo):
     def am_set(self):
-        self.img = self.game.res.get_img(AM_ARROW)
-        self.damage = AM_DAMAGE_ARROW
-        self.speed = AM_SPEED_ARROW
+        self.img = self.game.res.get_img(c.AmmoType.ARROW)
+        self.damage = c.AM_DAMAGE_ARROW
+        self.speed = c.AM_SPEED_ARROW
 
 
 class Bullet(Ammo):
     def am_set(self):
-        self.img = self.game.res.get_img(AM_BULLET)
-        self.damage = AM_DAMAGE_BULLET
-        self.speed = AM_SPEED_BULLET
+        self.img = self.game.res.get_img(c.AmmoType.BULLET)
+        self.damage = c.AM_DAMAGE_BULLET
+        self.speed = c.AM_SPEED_BULLET
 
 
 class Beam(Ammo):
     def am_set(self):
-        self.img = self.game.res.get_img(AM_BEAM)
-        self.damage = AM_DAMAGE_BEAM
-        self.speed = AM_SPEED_BEAM
+        self.img = self.game.res.get_img(c.AmmoType.BEAM)
+        self.damage = c.AM_DAMAGE_BEAM
+        self.speed = c.AM_SPEED_BEAM
 
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
@@ -137,13 +141,13 @@ class Beam(Ammo):
 
 class Cannonball(Ammo):
     def am_set(self):
-        self.img = self.game.res.get_img(AM_CANNONBALL)
-        self.damage = AM_DAMAGE_CANNONBALL
-        self.speed = AM_SPEED_CANNONBALL
+        self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
+        self.damage = c.AM_DAMAGE_CANNONBALL
+        self.speed = c.AM_SPEED_CANNONBALL
 
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
-            if dist(enemy.pos, self.targetPos) < AM_RANGE_CANNONBALL:
+            if dist(enemy.pos, self.targetPos) < c.AM_RANGE_CANNONBALL:
                 damage = 0
                 if self.damage > enemy.physicalDefence:
                     damage = self.damage - enemy.physicalDefence
