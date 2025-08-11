@@ -52,9 +52,9 @@ class Map:
         self, type: c.MapTaskType = c.MapTaskType.UPDATE
     ) -> Mapping[int, c.SummonType | c.TaskEvent] | None:
         if type == c.MapTaskType.UPDATE:
-            taskDict: Mapping[int, c.SummonType | c.TaskEvent] = (
-                self.mapWaveList[self.currentWave].generate_task_dict()
-            )
+            taskDict: Mapping[int, c.SummonType | c.TaskEvent] = self.mapWaveList[
+                self.currentWave
+            ].generate_task_dict()
             if not taskDict:
                 if self.currentWave < self.numWaves - 1:
                     self.currentWave += 1
@@ -138,9 +138,10 @@ class Task:
                 return c.TaskEvent.END
             self.taskLoc += 1
             return c.SummonType(task)
-        self.taskInterval = task
-        self.ifTaskPause = True
-        return c.TaskEvent.REST
+        else:
+            self.taskInterval = task - 1
+            self.ifTaskPause = True
+            return c.TaskEvent.REST
 
     def ta_reset(self):
         self.taskLoc = 0

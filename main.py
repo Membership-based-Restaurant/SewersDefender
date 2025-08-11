@@ -98,7 +98,12 @@ class Select(Page):
         self.img = pygame.image.load("resources/bks.png").convert_alpha()
         self.buttonManager.buttonList.append(
             entities.MapChooseButton(
-                "game_maps/map1/", self.pageManager.game, (600, 400)
+                "game_maps/map1/", self.pageManager.game, (600, 200)
+            )
+        )
+        self.buttonManager.buttonList.append(
+            entities.MapChooseButton(
+                "game_maps/map2/", self.pageManager.game, (600, 400)
             )
         )
         self.buttonManager.buttonList.append(

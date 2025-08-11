@@ -221,7 +221,8 @@ class Tower:
                 if self.ifFoundTarget:
                     if (
                         self.target is not None
-                        and self.target.location > enemy.location
+                        and len(self.target.routeIndex) - self.target.location
+                        < len(enemy.routeIndex) - enemy.location
                     ):
                         pass
                     else:
