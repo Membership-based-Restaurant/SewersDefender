@@ -1,4 +1,3 @@
-import os
 import pygame
 import copy
 import json
@@ -223,5 +222,5 @@ if __name__ == "__main__":
     m = MapCreate()
     # os.system("pause")
     # m.get_info()
-    os.system("pause")
+    input("pause")
     m.save_map()
