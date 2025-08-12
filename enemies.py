@@ -31,6 +31,7 @@ class EnManager:
         temptList = []
         for enemy in self.enemyList:
             if enemy.hp <= 0:
+                enemy.ifLiving = False
                 self.game.map.money += enemy.reward
                 self.enemyKilledNum += 1
                 pass

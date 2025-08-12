@@ -20,6 +20,8 @@ class ImgRes:
         self.BTimg = pygame.image.load("resources/baseTower.png").convert_alpha()
         self.MTimg = pygame.image.load("resources/marksmanTower.png").convert_alpha()
         self.STimg = pygame.image.load("resources/sniperTower.png").convert_alpha()
+        self.BCTimg = pygame.image.load("resources/bigCannonTower.png").convert_alpha()
+        self.LTimg = pygame.image.load("resources/missileTower.png").convert_alpha()
         # test
         self.TEimg = pygame.image.load("resources/fy.png").convert_alpha()
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
@@ -31,6 +33,7 @@ class ImgRes:
         self.BAMimg = pygame.image.load("resources/beam.png")
         self.CAMimg = pygame.image.load("resources/cannonball.png")
         self.BuAMimg = pygame.image.load("resources/bullet.png")
+        self.MAMimg = pygame.image.load("resources/missile.png")
         # dicts
         self.enemyImgs = {
             c.EnemyType.ARMORED: self.AEimg,
@@ -47,6 +50,8 @@ class ImgRes:
             c.TowerType.BASE: self.BTimg,
             c.TowerType.SNIPER: self.STimg,
             c.TowerType.MARKSMAN: self.MTimg,
+            c.TowerType.BIGCANNON: self.BCTimg,
+            c.TowerType.LAUNCHER: self.LTimg,
         }
         self.entityImgs = {c.EntityType.FINISH: self.FETimg}
         self.buttonImgs = {c.ButtonType.TO_DELETE: self.DBUimg}
@@ -55,6 +60,7 @@ class ImgRes:
             c.AmmoType.BEAM: self.BAMimg,
             c.AmmoType.CANNONBALL: self.CAMimg,
             c.AmmoType.BULLET: self.BuAMimg,
+            c.AmmoType.MISSILE: self.MAMimg,
         }
 
     def get_img(

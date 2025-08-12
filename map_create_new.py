@@ -90,6 +90,7 @@ class MapCreate:
                     c.SummonType.RAPID,120,c.SummonType.RAPID,120,c.SummonType.RAPID,120,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,120,
                     c.SummonType.RAPID,120,c.SummonType.RAPID,120,c.SummonType.RAPID,120,
+                    c.SummonType.BOSS,600,
                     c.TaskEvent.END
                 ],
             ],
@@ -116,7 +117,8 @@ class MapCreate:
         ]# mapTaskList[waveNum][routeNum][taskLoc] = task
         #!remember to add an END at the end of each wave
         # fmt:on
-        # *create routeindex and towerbaselist
+
+        # create routeindex and towerbaselist
         self.routeIndex = []
         self.towerBaseList = []
         self.finishPosList = []

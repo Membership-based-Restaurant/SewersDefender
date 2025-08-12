@@ -153,6 +153,7 @@ class Pause(Page):
         self.buttonManager.buttonList.append(
             entities.GameContinueButton(self.pageManager.game, (600, 600))
         )
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 700)))
         pass
 
 

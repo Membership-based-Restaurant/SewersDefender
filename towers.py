@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 towerUpgradeIndex = {
     c.TowerType.BASE: [c.TowerType.CANNON, c.TowerType.ARCHER, c.TowerType.WIZARD],
     c.TowerType.ARCHER: [c.TowerType.MARKSMAN, c.TowerType.SNIPER],
+    c.TowerType.CANNON: [c.TowerType.BIGCANNON, c.TowerType.LAUNCHER],
 }
 towerCostIndex = {
     c.TowerType.BASE: 0,
@@ -21,6 +22,8 @@ towerCostIndex = {
     c.TowerType.WIZARD: c.TO_COST_WIZARD,
     c.TowerType.SNIPER: c.TO_COST_SNIPER,
     c.TowerType.MARKSMAN: c.TO_COST_MARKSMAN,
+    c.TowerType.BIGCANNON: c.TO_COST_BIGCANNON,
+    c.TowerType.LAUNCHER: c.TO_COST_LAUNCHER,
 }
 
 
@@ -47,9 +50,13 @@ class ToManager:
             self.towerList.append(MarksmanTower(pos, self.game))
         elif type == c.TowerType.SNIPER:
             self.towerList.append(SniperTower(pos, self.game))
+        elif type == c.TowerType.BIGCANNON:
+            self.towerList.append(BigCannonTower(pos, self.game))
+        elif type == c.TowerType.LAUNCHER:
+            self.towerList.append(LauncherTower(pos, self.game))
         # test
-        if type == c.TowerType.TEST:
-            self.towerList.append(TestTower(pos, self.game))
+        """if type == c.TowerType.TEST:
+            self.towerList.append(TestTower(pos, self.game))"""
         print(f"tower at:{str(pos)} starts working")
         self.game.map.money -= towerCostIndex[type]
         self.towerNum += 1
@@ -197,7 +204,9 @@ class Tower:
         pygame.draw.rect(self.screen, (0, 255, 0), self.hitbox, 1)
         if self.ifSelected:
             if self.ifFoundTarget and self.target is not None:
-                pygame.draw.line(self.screen, (0, 0, 255), self.pos, self.target.pos)
+                pygame.draw.line(
+                    self.screen, (200, 200, 200), self.pos, self.target.pos
+                )
             pygame.draw.circle(self.screen, (0, 0, 255), self.pos, self.searchRange, 1)
 
     def to_attack(self) -> None:
@@ -210,7 +219,7 @@ class Tower:
         destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
             destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
         self.ifReady = False
 
     def to_search(self, enemyList: list[Enemy]) -> None:
@@ -315,7 +324,7 @@ class CannonTower(Tower):
         destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
             destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
         self.ifReady = False
 
 
@@ -341,7 +350,7 @@ class WizardTower(Tower):
         destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
             destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
         self.ifReady = False
 
 
@@ -383,5 +392,54 @@ class SniperTower(Tower):
         destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
             destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.pos, routeIndex[destLoc], self.ammo)
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class BigCannonTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_BIGCANNON
+        self.ammo = c.AmmoType.BIGCANNONBALL
+        self.searchRange = c.TO_RANGE_BIGCANNON
+        self.accuracy = 1
+        self.towerType = c.TowerType.BIGCANNON
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BIGCANNONBALL
+        )
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class LauncherTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_LAUNCHER
+        self.ammo = c.AmmoType.MISSILE
+        self.searchRange = c.TO_RANGE_LAUNCHER
+        self.accuracy = 1
+        self.towerType = c.TowerType.LAUNCHER
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, target=self.target)
         self.ifReady = False

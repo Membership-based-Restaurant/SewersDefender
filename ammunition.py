@@ -15,9 +15,10 @@ class AmManage:
 
     def create_ammo(
         self,
+        ammo_type: c.AmmoType,
         startPos: tuple[float, float],
-        targetPos: tuple[float, float],
-        ammo_type: c.AmmoType = c.AmmoType.ARROW,
+        targetPos: tuple[float, float] = None,
+        target=None,
     ) -> None:
         if ammo_type == c.AmmoType.ARROW:
             self.ammoList.append(Arrow(startPos, targetPos, self.game))
@@ -27,6 +28,10 @@ class AmManage:
             self.ammoList.append(Cannonball(startPos, targetPos, self.game))
         elif ammo_type == c.AmmoType.BULLET:
             self.ammoList.append(Bullet(startPos, targetPos, self.game))
+        elif ammo_type == c.AmmoType.BIGCANNONBALL:
+            self.ammoList.append(BigCannnonball(startPos, targetPos, self.game))
+        elif ammo_type == c.AmmoType.MISSILE:
+            self.ammoList.append(Missile(startPos, target, self.game))
 
     def manage_am_list(self):
         temptList = []
@@ -53,7 +58,7 @@ class AmManage:
 class Ammo:
     def __init__(self, startPos: tuple, targetPos: tuple, game):
         self.game = game
-        self.screen = self.game.screen
+        self.screen: pygame.Surface = self.game.screen
         self.screen_rect = self.screen.get_rect
         self.pos = startPos
         self.targetPos = targetPos
@@ -150,11 +155,12 @@ class Cannonball(Ammo):
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_CANNONBALL
         self.speed = c.AM_SPEED_CANNONBALL
+        self.range = c.AM_RANGE_CANNONBALL
 
     @override
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
-            if dist(enemy.pos, self.targetPos) < c.AM_RANGE_CANNONBALL:
+            if dist(enemy.pos, self.targetPos) < self.range:
                 damage = 0
                 if self.damage > enemy.physicalDefence:
                     damage = self.damage - enemy.physicalDefence
@@ -164,6 +170,106 @@ class Cannonball(Ammo):
                 if damage >= 1:
                     self.game.messageManager.create_message(
                         f"-{str(damage)}",
-                        (self.targetPos[0], self.targetPos[1] - randint(20, 30)),
+                        (enemy.pos[0], enemy.pos[1] - randint(20, 30)),
+                        self.get_word_size(damage),
+                    )
+
+    @override
+    def am_blit(self):
+        rotatedImg = pygame.transform.rotate(self.img, -self.angel / pi * 180)
+        rotatedImg_rect = rotatedImg.get_rect()
+        rotatedImg_rect.center = self.pos
+        # pygame.draw.circle(self.screen, (255, 0, 0, 128), self.targetPos, self.range, 1)
+        self.screen.blit(rotatedImg, rotatedImg_rect)
+
+
+class BigCannnonball(Cannonball):
+    @override
+    def am_set(self):
+        self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
+        self.damage = c.AM_DAMAGE_BIGCANNONBALL
+        self.speed = c.AM_SPEED_BIGCANNONBALL
+        self.range = c.AM_RANGE_BIGCANNONBALL
+
+
+class Missile(Ammo):
+    @override
+    def __init__(self, startPos: tuple, target, game):
+        self.game = game
+        self.screen: pygame.Surface = self.game.screen
+        self.screen_rect = self.screen.get_rect
+        self.pos = startPos
+        self.target = target
+        self.targetPos = self.target.pos
+        self.am_set()
+        self.angel = 3 / 2 * pi
+
+    @override
+    def am_set(self):
+        self.img = self.game.res.get_img(c.AmmoType.MISSILE)
+        self.damage = c.AM_DAMAGE_MISSILE
+        self.speed = c.AM_SPEED_MISSILE
+        self.range = c.AM_RANGE_MISSILE
+
+    def am_new_angel(self):
+        if (
+            self.game.enemyManager.enemyList
+            and self.target not in self.game.enemyManager.enemyList
+        ):
+            self.am_search()
+        self.targetPos = self.target.pos
+        x = self.targetPos[0] - self.pos[0]
+        y = self.targetPos[1] - self.pos[1]
+        newAngel = float(arctan2(y, x))
+        if self.angel < 0:
+            self.angel += 2 * pi
+        if newAngel < 0:
+            newAngel += 2 * pi
+        if self.angel > 2 * pi:
+            self.angel -= 2 * pi
+        d = newAngel - self.angel
+        if abs(d) <= pi / 12:
+            self.angel += d
+        else:
+            self.angel += pi / 12
+
+    @override
+    def am_search(self):
+        ifFoundTarget = False
+        for enemy in self.game.enemyManager.enemyList:
+            if ifFoundTarget:
+                if (
+                    self.target is not None
+                    and len(self.target.routeIndex) - self.target.location
+                    < len(enemy.routeIndex) - enemy.location
+                ):
+                    pass
+                else:
+                    self.target = enemy
+            else:
+                self.target = enemy
+                ifFoundTarget = True
+
+    @override
+    def am_move(self):
+        self.am_new_angel()
+        x = self.pos[0] + cos(self.angel) * self.speed
+        y = self.pos[1] + sin(self.angel) * self.speed
+        self.pos = (x, y)
+
+    @override
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if dist(enemy.pos, self.targetPos) < self.range:
+                damage = 0
+                if self.damage > enemy.physicalDefence:
+                    damage = self.damage - enemy.physicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                if damage >= 1:
+                    self.game.messageManager.create_message(
+                        f"-{str(damage)}",
+                        (enemy.pos[0], enemy.pos[1] - randint(20, 30)),
                         self.get_word_size(damage),
                     )
