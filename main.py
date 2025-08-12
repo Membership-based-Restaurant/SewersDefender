@@ -22,7 +22,10 @@ class PaManager:
         pygame.display.set_icon(self.res.icon)
         self.set_pages()
         self.currentPage = self.welcome
-        pass
+        # music
+        pygame.mixer.init()
+        pygame.mixer.music.load("bgm/bgm1_by_tttiw.mp3")
+        pygame.mixer.music.play()
 
     def set_pages(self):
         self.welcome = Welcome(self.screen, self.res, self)
