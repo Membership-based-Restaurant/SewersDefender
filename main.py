@@ -25,7 +25,7 @@ class PaManager:
         # music
         pygame.mixer.init()
         pygame.mixer.music.load("bgm/bgm1_by_tttiw.mp3")
-        pygame.mixer.music.play()
+        pygame.mixer.music.play(-1)
 
     def set_pages(self):
         self.welcome = Welcome(self.screen, self.res, self)

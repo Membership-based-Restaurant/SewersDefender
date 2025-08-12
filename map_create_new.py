@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 import copy
 import json
@@ -188,7 +189,20 @@ class MapCreate:
         self.bkPath = f"{self.mapPath}bk.png"
         for route in self.routeIndex:
             for location in route:
-                pygame.draw.circle(self.screen, (135, 95, 32), location, 25)
+                pygame.draw.circle(
+                    self.screen,
+                    (120, 67, 21),
+                    (location[0] + randint(-5, 5), location[1] + randint(-5, 5)),
+                    20,
+                )
+        for route in self.routeIndex:
+            for location in route:
+                pygame.draw.circle(
+                    self.screen,
+                    (150, 84, 26),
+                    (location[0] + randint(-5, 5), location[1] + randint(-5, 5)),
+                    15,
+                )
         startImg = pygame.image.load("resources/start.png").convert_alpha()
         rect = startImg.get_rect()
         for pos in self.startPosList:
