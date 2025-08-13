@@ -59,7 +59,7 @@ class MapCreate:
         # fmt:off
         self.mapTaskList = [
             [
-                [   c.SummonType.BOSS,600,
+                [   
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
