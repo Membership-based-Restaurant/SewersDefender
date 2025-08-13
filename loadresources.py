@@ -22,6 +22,9 @@ class ImgRes:
         self.STimg = pygame.image.load("resources/sniperTower.png").convert_alpha()
         self.BCTimg = pygame.image.load("resources/bigCannonTower.png").convert_alpha()
         self.LTimg = pygame.image.load("resources/missileTower.png").convert_alpha()
+        self.ARTimg = pygame.image.load("resources/crystalTower.png").convert_alpha()
+        self.PTimg = pygame.image.load("resources/pastorTower.png").convert_alpha()
+        self.WITimg = pygame.image.load("resources/witchTower.png").convert_alpha()
         # test
         self.TEimg = pygame.image.load("resources/fy.png").convert_alpha()
         self.TTimg = pygame.image.load("resources/mr.png").convert_alpha()
@@ -34,6 +37,13 @@ class ImgRes:
         self.CAMimg = pygame.image.load("resources/cannonball.png")
         self.BuAMimg = pygame.image.load("resources/bullet.png")
         self.MAMimg = pygame.image.load("resources/missile.png")
+        self.GBAMimg = pygame.image.load("resources/grandBeam.png")
+        self.MBAMimg = pygame.image.load("resources/magicBall.png")
+        self.HWAMimg = pygame.image.load("resources/holyWater.png")
+        # buff
+        self.TBUFimg = pygame.image.load("resources/toxicosis.png").convert_alpha()
+        self.ARBUFimg = pygame.image.load("resources/armorReduce.png").convert_alpha()
+        self.DBUFimg = pygame.image.load("resources/dizzy.png").convert_alpha()
         # dicts
         self.enemyImgs = {
             c.EnemyType.ARMORED: self.AEimg,
@@ -52,6 +62,9 @@ class ImgRes:
             c.TowerType.MARKSMAN: self.MTimg,
             c.TowerType.BIGCANNON: self.BCTimg,
             c.TowerType.LAUNCHER: self.LTimg,
+            c.TowerType.WITCH: self.WITimg,
+            c.TowerType.PASTOR: self.PTimg,
+            c.TowerType.ARCHMAGE: self.ARTimg,
         }
         self.entityImgs = {c.EntityType.FINISH: self.FETimg}
         self.buttonImgs = {c.ButtonType.TO_DELETE: self.DBUimg}
@@ -61,6 +74,14 @@ class ImgRes:
             c.AmmoType.CANNONBALL: self.CAMimg,
             c.AmmoType.BULLET: self.BuAMimg,
             c.AmmoType.MISSILE: self.MAMimg,
+            c.AmmoType.HOLYWATER: self.HWAMimg,
+            c.AmmoType.MAGICBALL: self.MBAMimg,
+            c.AmmoType.GRANDBEAM: self.GBAMimg,
+        }
+        self.buffImgs = {
+            c.BuffType.ARMORREDUCE: self.ARBUFimg,
+            c.BuffType.DIZZY: self.DBUFimg,
+            c.BuffType.TOXICOSIS: self.TBUFimg,
         }
 
     def get_img(
@@ -71,6 +92,7 @@ class ImgRes:
             c.EntityType,
             c.ButtonType,
             c.AmmoType,
+            c.BuffType,
         ],
     ):
         if isinstance(sprite_type, c.EnemyType):
@@ -83,6 +105,8 @@ class ImgRes:
             return self.buttonImgs[sprite_type]
         if isinstance(sprite_type, c.AmmoType):
             return self.ammoImgs[sprite_type]
+        if isinstance(sprite_type, c.BuffType):
+            return self.buffImgs[sprite_type]
         raise KeyError(f"Unsupported sprite type: {sprite_type}")
 
 

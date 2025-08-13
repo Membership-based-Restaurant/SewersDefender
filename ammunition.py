@@ -17,7 +17,7 @@ class AmManage:
         self,
         ammo_type: c.AmmoType,
         startPos: tuple[float, float],
-        targetPos: tuple[float, float],
+        targetPos: tuple[float, float] = None,
         target=None,
     ) -> None:
         if ammo_type == c.AmmoType.ARROW:
@@ -32,6 +32,12 @@ class AmManage:
             self.ammoList.append(BigCannnonball(startPos, targetPos, self.game))
         elif ammo_type == c.AmmoType.MISSILE:
             self.ammoList.append(Missile(startPos, target, self.game))
+        elif ammo_type == c.AmmoType.GRANDBEAM:
+            self.ammoList.append(GrandBeam(startPos, targetPos, self.game))
+        elif ammo_type == c.AmmoType.MAGICBALL:
+            self.ammoList.append(MagicBall(startPos, targetPos, self.game))
+        elif ammo_type == c.AmmoType.HOLYWATER:
+            self.ammoList.append(HolyWater(startPos, targetPos, self.game))
 
     def manage_am_list(self):
         temptList = []
@@ -105,7 +111,10 @@ class Ammo:
         self.screen.blit(rotatedImg, rotatedImg_rect)
 
     def get_word_size(self, num: int):
-        return int(4 * log(8 * num))
+        size = int(4 * log(8 * num))
+        if size < 14:
+            size = 14
+        return size
 
 
 class Arrow(Ammo):
@@ -148,6 +157,93 @@ class Beam(Ammo):
                         self.get_word_size(damage),
                     )
                 break
+
+
+class MagicBall(Ammo):
+    @override
+    def am_set(self):
+        self.img = self.game.res.get_img(c.AmmoType.MAGICBALL)
+        self.damage = c.AM_DAMAGE_MAGICBALL
+        self.speed = c.AM_SPEED_MAGICBALL
+
+    @override
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if enemy.hitbox.collidepoint(self.targetPos):
+                damage = 0
+                if self.damage > enemy.magicalDefence:
+                    damage = self.damage - enemy.magicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                if damage >= 1:
+                    self.game.messageManager.create_message(
+                        f"-{str(damage)}",
+                        (self.targetPos[0], self.targetPos[1] - randint(20, 30)),
+                        self.get_word_size(damage),
+                    )
+                self.game.buffManager.create_buff(
+                    c.BuffType.TOXICOSIS, c.AM_BUFF_DURATION_MAGICBALL, enemy
+                )
+                break
+
+
+class HolyWater(Ammo):
+    @override
+    def am_set(self):
+        self.img = self.game.res.get_img(c.AmmoType.HOLYWATER)
+        self.damage = c.AM_DAMAGE_HOLYWATER
+        self.speed = c.AM_SPEED_HOLYWATER
+
+    @override
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if enemy.hitbox.collidepoint(self.targetPos):
+                damage = 0
+                if self.damage > enemy.magicalDefence:
+                    damage = self.damage - enemy.magicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                if damage >= 1:
+                    self.game.messageManager.create_message(
+                        f"-{str(damage)}",
+                        (self.targetPos[0], self.targetPos[1] - randint(20, 30)),
+                        self.get_word_size(damage),
+                    )
+                self.game.buffManager.create_buff(
+                    c.BuffType.ARMORREDUCE, c.AM_BUFF_DURATION_HOLYWATER, enemy
+                )
+                break
+
+
+class GrandBeam(Ammo):
+    @override
+    def am_set(self):
+        self.img = self.game.res.get_img(c.AmmoType.GRANDBEAM)
+        self.damage = c.AM_DAMAGE_GRANDBEAM
+        self.speed = c.AM_SPEED_GRANDBEAM
+        self.range = c.AM_RANGE_GRANDBEAM
+
+    @override
+    def am_conclude(self):
+        for enemy in self.game.enemyManager.enemyList:
+            if dist(enemy.pos, self.targetPos) < self.range:
+                damage = 0
+                if self.damage > enemy.magicalDefence:
+                    damage = self.damage - enemy.magicalDefence
+                else:
+                    pass
+                enemy.hp -= damage
+                if damage >= 1:
+                    self.game.messageManager.create_message(
+                        f"-{str(damage)}",
+                        (enemy.pos[0], enemy.pos[1] - randint(20, 30)),
+                        self.get_word_size(damage),
+                    )
+                self.game.buffManager.create_buff(
+                    c.BuffType.DIZZY, c.AM_BUFF_DURATION_GRAMDBEAM, enemy
+                )
 
 
 class Cannonball(Ammo):
@@ -211,7 +307,7 @@ class Missile(Ammo):
         self.img = self.game.res.get_img(c.AmmoType.MISSILE)
         self.damage = c.AM_DAMAGE_MISSILE
         self.speed = c.AM_SPEED_MISSILE
-        self.range = c.AM_RANGE_MISSILE
+        self.range = c.TO_RANGE_LAUNCHER
 
     def am_new_angel(self):
         if (
@@ -235,7 +331,7 @@ class Missile(Ammo):
         else:
             self.angel += pi / 12
 
-    def am_search(self):
+    """def am_search(self):
         ifFoundTarget = False
         for enemy in self.game.enemyManager.enemyList:
             if ifFoundTarget:
@@ -249,7 +345,7 @@ class Missile(Ammo):
                     self.target = enemy
             else:
                 self.target = enemy
-                ifFoundTarget = True
+                ifFoundTarget = True"""
 
     @override
     def am_move(self):
@@ -265,7 +361,7 @@ class Missile(Ammo):
                 reduction = 0.04 * (
                     enemy.armor - self.damage / (enemy.armorToughness / 4 + 2)
                 )
-                damage = self.damage * (1 - reduction)
+                damage = floor(self.damage * (1 - reduction))
                 if damage < 0:
                     damage = 0
                 enemy.hp -= damage

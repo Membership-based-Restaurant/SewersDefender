@@ -1,5 +1,7 @@
 import pygame
 import constants as c
+from random import randint
+from math import log
 from typing import override
 
 
@@ -60,7 +62,7 @@ class EnManager:
 class Enemy:
     def __init__(self, game, enemyNum: int, routeNum: int):
         # image
-        self.screen = game.screen
+        self.screen: pygame.Surface = game.screen
         # basic data
         self.game = game
         self.num = enemyNum
@@ -250,3 +252,144 @@ class BossEnemy(Enemy):
                 self.game.messageManager.create_message(
                     f"+{str(c.EM_BOSS_RECOVER)}", self.pos, 30, (0, 255, 0)
                 )
+
+
+class BuffManager:
+    def __init__(self, game):
+        self.buffList: list[Buff] = []
+        self.towerBuffList: list[Buff] = []
+        self.game = game
+
+    def check_buff_list(self):  # prevent repeat
+        temptList: list[Buff] = []
+        length = len(self.buffList)
+        for i in range(length):
+            buff1 = self.buffList[i]
+            flag = True
+            for j in range(i + 1, length):
+                buff2 = self.buffList[j]
+                if (
+                    buff1.type == buff2.type
+                    and buff1.target == buff2.target
+                    and buff2.duration >= buff1.duration
+                ):
+                    buff1.duration = buff2.duration
+                    self.buffList[j] = buff1
+                    flag = False
+            if flag:
+                temptList.append(buff1)
+        self.buffList = temptList
+
+    def create_buff(self, type: c.BuffType, duration: int, target: Enemy):
+        if type == c.BuffType.TOXICOSIS:
+            self.buffList.append(Toxicosis(self.game, duration, target))
+        if type == c.BuffType.ARMORREDUCE:
+            self.buffList.append(ArmorReduce(self.game, duration, target))
+        if type == c.BuffType.DIZZY:
+            self.buffList.append(Dizzy(self.game, duration, target))
+        pass
+
+    def manage_buff_list(self):
+        self.check_buff_list()
+        temptList: list[Buff] = []
+        for buff in self.buffList:
+            if buff.duration < 0:
+                buff.buff_dissolve()
+            elif not buff.target.ifLiving:
+                pass
+            else:
+                buff.buff_work()
+                temptList.append(buff)
+        self.buffList = temptList
+
+    def blit_buff_list(self):
+        for buff in self.buffList:
+            buff.buff_blit()
+
+
+class Buff:
+    def __init__(self, game, duration: int, target: Enemy):
+        self.game = game
+        self.screen: pygame.Surface = self.game.screen
+        self.target = target
+        self.duration = duration
+        self.c_duration = duration
+        self.pos = target.pos
+        self.buff_set()
+        self.img_rect = self.img.get_rect()
+        self.img_rect.center = self.pos
+
+    def buff_set(self):  # example
+        self.img = self.game.res.get_img(None)
+        self.type = c.BuffType.DIZZY
+        pass
+
+    def buff_work(self):  # example
+        self.pos = self.target.pos
+        self.img_rect.center = self.pos
+        self.duration -= 1
+        pass
+
+    def buff_dissolve(self):  # example
+        pass
+
+    def get_word_size(self, num: int):
+        size = int(4 * log(8 * num))
+        if size < 14:
+            size = 14
+        return size
+
+    def buff_blit(self):
+        self.screen.blit(self.img, self.img_rect)
+
+
+class Toxicosis(Buff):
+    @override
+    def buff_set(self):
+        self.img = self.game.res.get_img(c.BuffType.TOXICOSIS)
+        self.interval = 30
+        self.c_interval = self.interval
+        self.damage = c.BUFF_DAMAGE_TOXICOSIS
+        self.type = c.BuffType.TOXICOSIS
+
+    @override
+    def buff_work(self):
+        if self.interval == 0:
+            self.interval = self.c_interval
+            self.target.hp -= self.damage
+            self.game.messageManager.create_message(
+                f"-{str(self.damage)}",
+                (self.target.pos[0], self.target.pos[1] - randint(20, 30)),
+                self.get_word_size(self.damage),
+            )
+            print(1)
+        self.interval -= 1
+        self.pos = self.target.pos
+        self.img_rect.center = self.pos
+        self.duration -= 1
+
+
+class ArmorReduce(Buff):
+    @override
+    def buff_set(self):
+        self.img = self.game.res.get_img(c.BuffType.ARMORREDUCE)
+        self.c_armor = self.target.armor
+        self.target.armor = 0
+        self.type = c.BuffType.ARMORREDUCE
+
+    @override
+    def buff_dissolve(self):
+        self.target.armor = self.c_armor
+
+
+class Dizzy(Buff):
+    @override
+    def buff_set(self):
+        self.img = self.game.res.get_img(c.BuffType.DIZZY)
+        self.c_speed = self.target.speed
+        self.target.speed = round(self.c_speed * 0.2)
+        self.type = c.BuffType.DIZZY
+
+    @override
+    def buff_dissolve(self):
+        self.target.speed = self.c_speed

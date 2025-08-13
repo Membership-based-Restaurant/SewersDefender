@@ -176,6 +176,7 @@ class Game(Page):
     def set_game_resources(self):
         self.map = maps.Map(self, self.mapPath)
         self.enemyManager = enemies.EnManager(self)
+        self.buffManager = enemies.BuffManager(self)
         self.towerManager = towers.ToManager(self)
         self.ammoManager = ammunition.AmManage(self)
         self.messageManager = entities.MeManager(self)
@@ -243,6 +244,7 @@ class Game(Page):
 
     def update_entities(self):
         self.enemyManager.manage_en_list()
+        self.buffManager.manage_buff_list()
         self.towerManager.manage_to_list()
         self.ammoManager.manage_am_list()
         self.messageManager.manage_me_list()
@@ -273,6 +275,7 @@ class Game(Page):
         self.map.finishManager.blit_fin_list()
         self.towerManager.blit_to_list()
         self.enemyManager.blit_en_list()
+        self.buffManager.blit_buff_list()
         self.ammoManager.blit_am_list()
         self.blit_info()
         self.towerManager.operateButtonManager.blit_bu_list()

@@ -14,6 +14,7 @@ towerUpgradeIndex = {
     c.TowerType.BASE: [c.TowerType.CANNON, c.TowerType.ARCHER, c.TowerType.WIZARD],
     c.TowerType.ARCHER: [c.TowerType.MARKSMAN, c.TowerType.SNIPER],
     c.TowerType.CANNON: [c.TowerType.BIGCANNON, c.TowerType.LAUNCHER],
+    c.TowerType.WIZARD: [c.TowerType.ARCHMAGE, c.TowerType.WITCH, c.TowerType.PASTOR],
 }
 towerCostIndex = {
     c.TowerType.BASE: 0,
@@ -24,6 +25,9 @@ towerCostIndex = {
     c.TowerType.MARKSMAN: c.TO_COST_MARKSMAN,
     c.TowerType.BIGCANNON: c.TO_COST_BIGCANNON,
     c.TowerType.LAUNCHER: c.TO_COST_LAUNCHER,
+    c.TowerType.ARCHMAGE: c.TO_COST_ARCHMAGE,
+    c.TowerType.WITCH: c.TO_COST_WITCH,
+    c.TowerType.PASTOR: c.TO_COST_PASTOR,
 }
 
 
@@ -54,6 +58,12 @@ class ToManager:
             self.towerList.append(BigCannonTower(pos, self.game))
         elif type == c.TowerType.LAUNCHER:
             self.towerList.append(LauncherTower(pos, self.game))
+        elif type == c.TowerType.WITCH:
+            self.towerList.append(WitchTower(pos, self.game))
+        elif type == c.TowerType.ARCHMAGE:
+            self.towerList.append(ArchmageTower(pos, self.game))
+        elif type == c.TowerType.PASTOR:
+            self.towerList.append(PastorTower(pos, self.game))
         # test
         """if type == c.TowerType.TEST:
             self.towerList.append(TestTower(pos, self.game))"""
@@ -64,7 +74,7 @@ class ToManager:
     def search_tower(self, pos: tuple, mode=c.COMMON):
         if mode == c.COMMON:
             for tower in self.towerList:
-                if tower.ifWorking and tower.hitbox.collidepoint(pos):
+                if tower.ifLiving and tower.hitbox.collidepoint(pos):
                     return tower
             return False
         elif mode == c.UPGRADE:
@@ -98,12 +108,12 @@ class ToManager:
 
     def delete_tower(self, tower):
         tower.ifSelected = False
-        tower.ifWorking = False
+        tower.ifLiving = False
         tower.to_reset()
         basePos = tower.pos
         for t in self.towerList:  # set the base
             if t.towerType == c.TowerType.BASE and t.hitbox.collidepoint(basePos):
-                t.ifWorking = True
+                t.ifLiving = True
                 t.ifSelected = True
                 self.selectedTower = t
 
@@ -117,7 +127,7 @@ class ToManager:
             self.game.messageManager.create_message("Not enough money", tower.pos, 20)
             return
         tower.ifSelected = False
-        tower.ifWorking = False  # stop old tower
+        tower.ifLiving = False  # stop old tower
         tower.to_reset()
         newTowerPos = tower.pos
         # set the new one
@@ -128,7 +138,7 @@ class ToManager:
     def manage_to_list(self):
         temptList = self.towerList[: self.numBases]
         for tower in self.towerList[self.numBases :]:
-            if tower.ifWorking:
+            if tower.ifLiving:
                 tower.to_search(self.game.enemyManager.enemyList)
                 tower.to_prepare()
                 if tower.ifReady and tower.ifFoundTarget:
@@ -138,7 +148,7 @@ class ToManager:
 
     def blit_to_list(self):
         for tower in self.towerList:
-            if tower.ifWorking:
+            if tower.ifLiving:
                 tower.to_blit()
 
     def clear_to_list(self):
@@ -161,7 +171,7 @@ class Tower:
         # basic data
         self.game = game
         self.pos = pos
-        self.ifWorking = True
+        self.ifLiving = True
         self.ifReady = False
         self.prepTimer = 0
         # select mode
@@ -300,60 +310,6 @@ class ArcherTower(Tower):
         self.hitbox = self.img.get_rect().inflate(-0, -30)
 
 
-class CannonTower(Tower):
-    @override
-    def to_set(self) -> None:
-        # attack
-        self.prepInterval = c.TO_INTERVAL_CANNON
-        self.ammo = c.AmmoType.CANNONBALL
-        self.searchRange = c.TO_RANGE_CANNON
-        self.accuracy = 1
-        self.towerType = c.TowerType.CANNON
-        # img
-        self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(0, -30)
-
-    @override
-    def to_attack(self) -> None:
-        if self.target is None:
-            return
-        routeIndex = self.target.routeIndex
-        time = round(
-            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_CANNONBALL
-        )
-        destLoc = self.target.location + time * self.target.speed
-        if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
-        self.ifReady = False
-
-
-class WizardTower(Tower):
-    @override
-    def to_set(self) -> None:
-        # attack
-        self.prepInterval = c.TO_INTERVAL_WIZARD
-        self.ammo = c.AmmoType.BEAM
-        self.searchRange = c.TO_RANGE_WIZARD
-        self.accuracy = 1
-        self.towerType = c.TowerType.WIZARD
-        # img
-        self.img = self.game.res.get_img(self.towerType)
-        self.hitbox = self.img.get_rect().inflate(0, -30)
-
-    @override
-    def to_attack(self) -> None:
-        if self.target is None:
-            return
-        routeIndex = self.target.routeIndex
-        time = round(dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BEAM)
-        destLoc = self.target.location + time * self.target.speed
-        if destLoc >= len(routeIndex):
-            destLoc = len(routeIndex) - 1
-        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
-        self.ifReady = False
-
-
 class MarksmanTower(Tower):
     @override
     def to_set(self) -> None:
@@ -388,6 +344,34 @@ class SniperTower(Tower):
         routeIndex = self.target.routeIndex
         time = round(
             dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BULLET
+        )
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class CannonTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_CANNON
+        self.ammo = c.AmmoType.CANNONBALL
+        self.searchRange = c.TO_RANGE_CANNON
+        self.accuracy = 1
+        self.towerType = c.TowerType.CANNON
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_CANNONBALL
         )
         destLoc = self.target.location + time * self.target.speed
         if destLoc >= len(routeIndex):
@@ -442,4 +426,114 @@ class LauncherTower(Tower):
         if self.target is None:
             return
         self.game.ammoManager.create_ammo(self.ammo, self.pos, target=self.target)
+        self.ifReady = False
+
+
+class WizardTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_WIZARD
+        self.ammo = c.AmmoType.BEAM
+        self.searchRange = c.TO_RANGE_WIZARD
+        self.accuracy = 1
+        self.towerType = c.TowerType.WIZARD
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_BEAM)
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class WitchTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_WITCH
+        self.ammo = c.AmmoType.MAGICBALL
+        self.searchRange = c.TO_RANGE_WITCH
+        self.accuracy = 1
+        self.towerType = c.TowerType.WITCH
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_MAGICBALL
+        )
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class PastorTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_PASTOR
+        self.ammo = c.AmmoType.HOLYWATER
+        self.searchRange = c.TO_RANGE_PASTOR
+        self.accuracy = 1
+        self.towerType = c.TowerType.PASTOR
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_HOLYWATER
+        )
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
+        self.ifReady = False
+
+
+class ArchmageTower(Tower):
+    @override
+    def to_set(self) -> None:
+        # attack
+        self.prepInterval = c.TO_INTERVAL_ARCHMAGE
+        self.ammo = c.AmmoType.GRANDBEAM
+        self.searchRange = c.TO_RANGE_ARCHMAGE
+        self.accuracy = 1
+        self.towerType = c.TowerType.ARCHMAGE
+        # img
+        self.img = self.game.res.get_img(self.towerType)
+        self.hitbox = self.img.get_rect().inflate(0, -30)
+
+    @override
+    def to_attack(self) -> None:
+        if self.target is None:
+            return
+        routeIndex = self.target.routeIndex
+        time = round(
+            dist(self.pos, routeIndex[self.target.location]) / c.AM_SPEED_GRANDBEAM
+        )
+        destLoc = self.target.location + time * self.target.speed
+        if destLoc >= len(routeIndex):
+            destLoc = len(routeIndex) - 1
+        self.game.ammoManager.create_ammo(self.ammo, self.pos, routeIndex[destLoc])
         self.ifReady = False

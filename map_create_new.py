@@ -1,12 +1,11 @@
 from random import randint
 import pygame
-import copy
 import json
 import constants as c
 
 r = 1
 u = 2
-l = 3
+l = 3  # noqa: E741
 d = 4
 s = 5
 e = 6
@@ -60,7 +59,7 @@ class MapCreate:
         # fmt:off
         self.mapTaskList = [
             [
-                [
+                [   c.SummonType.BOSS,600,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
                     c.SummonType.COMMON,60,c.SummonType.COMMON,60,c.SummonType.COMMON,60,
