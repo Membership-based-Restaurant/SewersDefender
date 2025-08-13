@@ -24,7 +24,7 @@ class PaManager:
         self.currentPage = self.welcome
         # music
         pygame.mixer.init()
-        pygame.mixer.music.load("bgm/bgm1_by_tttiw.mp3")
+        pygame.mixer.music.load("bgm/bgm1_by_tttiw.ogg")
         pygame.mixer.music.play(-1)
 
     def set_pages(self):

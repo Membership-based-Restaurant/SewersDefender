@@ -4,7 +4,7 @@ import pygame
 import constants as c
 from numpy import arctan2, pi, log
 from random import randint
-from math import cos, sin, dist
+from math import cos, floor, sin, dist
 from typing import override
 
 
@@ -17,7 +17,7 @@ class AmManage:
         self,
         ammo_type: c.AmmoType,
         startPos: tuple[float, float],
-        targetPos: tuple[float, float] = None,
+        targetPos: tuple[float, float],
         target=None,
     ) -> None:
         if ammo_type == c.AmmoType.ARROW:
@@ -83,11 +83,12 @@ class Ammo:
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
-                damage = 0
-                if self.damage > enemy.physicalDefence:
-                    damage = self.damage - enemy.physicalDefence  # example
-                else:
-                    pass
+                reduction = 0.04 * (
+                    enemy.armor - self.damage / (enemy.armorToughness / 4 + 2)
+                )
+                damage = floor(self.damage * (1 - reduction))
+                if damage < 0:
+                    damage = 0
                 enemy.hp -= damage
                 if damage >= 1:
                     self.game.messageManager.create_message(
@@ -161,11 +162,12 @@ class Cannonball(Ammo):
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
-                damage = 0
-                if self.damage > enemy.physicalDefence:
-                    damage = self.damage - enemy.physicalDefence
-                else:
-                    pass
+                reduction = 0.04 * (
+                    enemy.armor - self.damage / (enemy.armorToughness / 4 + 2)
+                )
+                damage = self.damage * (1 - reduction)
+                if damage < 0:
+                    damage = 0
                 enemy.hp -= damage
                 if damage >= 1:
                     self.game.messageManager.create_message(
@@ -233,7 +235,6 @@ class Missile(Ammo):
         else:
             self.angel += pi / 12
 
-    @override
     def am_search(self):
         ifFoundTarget = False
         for enemy in self.game.enemyManager.enemyList:
@@ -261,11 +262,12 @@ class Missile(Ammo):
     def am_conclude(self):
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
-                damage = 0
-                if self.damage > enemy.physicalDefence:
-                    damage = self.damage - enemy.physicalDefence
-                else:
-                    pass
+                reduction = 0.04 * (
+                    enemy.armor - self.damage / (enemy.armorToughness / 4 + 2)
+                )
+                damage = self.damage * (1 - reduction)
+                if damage < 0:
+                    damage = 0
                 enemy.hp -= damage
                 if damage >= 1:
                     self.game.messageManager.create_message(
