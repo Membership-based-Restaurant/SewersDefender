@@ -307,7 +307,7 @@ class Missile(Ammo):
         self.img = self.game.res.get_img(c.AmmoType.MISSILE)
         self.damage = c.AM_DAMAGE_MISSILE
         self.speed = c.AM_SPEED_MISSILE
-        self.range = c.TO_RANGE_LAUNCHER
+        self.range = c.AM_RANGE_MISSILE
 
     def am_new_angel(self):
         if (
