@@ -362,7 +362,6 @@ class Toxicosis(Buff):
                 (self.target.pos[0], self.target.pos[1] - randint(20, 30)),
                 self.get_word_size(self.damage),
             )
-            print(1)
         self.interval -= 1
         self.pos = self.target.pos
         self.img_rect.center = self.pos

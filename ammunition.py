@@ -331,7 +331,7 @@ class Missile(Ammo):
         else:
             self.angel += pi / 12
 
-    """def am_search(self):
+    def am_search(self):
         ifFoundTarget = False
         for enemy in self.game.enemyManager.enemyList:
             if ifFoundTarget:
@@ -345,7 +345,7 @@ class Missile(Ammo):
                     self.target = enemy
             else:
                 self.target = enemy
-                ifFoundTarget = True"""
+                ifFoundTarget = True
 
     @override
     def am_move(self):
