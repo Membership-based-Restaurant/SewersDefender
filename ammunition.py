@@ -165,7 +165,7 @@ class Cannonball(Ammo):
                 reduction = 0.04 * (
                     enemy.armor - self.damage / (enemy.armorToughness / 4 + 2)
                 )
-                damage = self.damage * (1 - reduction)
+                damage = floor(self.damage * (1 - reduction))
                 if damage < 0:
                     damage = 0
                 enemy.hp -= damage
