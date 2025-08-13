@@ -80,16 +80,17 @@ class Enemy:
 
     def en_set(self):
         # img
-        self.img = self.game.res.get_img(c.EnemyType.TEST)  # example
+        self.img = self.game.res.get_img(c.EnemyType.TEST)
         # basic data
-        self.speed = c.EM_SPEED_D  # example
-        self.hp = c.EM_HP_D  # example
-        self.physicalDefence = c.EM_P_DEFENCE_D  # example
-        self.magicalDefence = c.EM_M_DEFENCE_D  # example
-        self.hitbox = self.img.get_rect().inflate(-5, -5)  # example
-        self.reward = c.EM_REWARD_COMMON  # example
+        self.speed = c.EM_SPEED_D
+        self.hp = c.EM_HP_D
+        self.armor = c.EM_ARMOR_D
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_D
+        self.magicalDefence = c.EM_M_DEFENCE_D
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+        self.reward = c.EM_REWARD_COMMON
         # attack
-        self.damage = c.EM_DAMAGE_D  # example
+        self.damage = c.EM_DAMAGE_D
 
     def en_move(self, temptSpeed=0):
         # move the enemy
@@ -144,7 +145,8 @@ class TestEnemy(Enemy):
         # basic data
         self.speed = c.EM_SPEED_D
         self.hp = c.EM_HP_D
-        self.physicalDefence = c.EM_P_DEFENCE_D
+        self.armor = c.EM_ARMOR_D
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_D
         self.magicalDefence = c.EM_M_DEFENCE_D
         self.hitbox = self.img.get_rect().inflate(-10, -10)
         self.reward = c.EM_REWARD_COMMON
@@ -164,7 +166,8 @@ class CommonEnemy(Enemy):
         # basic data
         self.speed = c.EM_SPEED_COMMON
         self.hp = c.EM_HP_COMMON
-        self.physicalDefence = c.EM_P_DEFENCE_COMMON
+        self.armor = c.EM_ARMOR_COMMON
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_COMMON
         self.magicalDefence = c.EM_M_DEFENCE_COMMON
         self.hitbox = self.img.get_rect().inflate(-0, -0)
         self.reward = c.EM_REWARD_COMMON
@@ -184,7 +187,8 @@ class ArmoredEnemy(Enemy):
         # basic data
         self.speed = c.EM_SPEED_ARMORED
         self.hp = c.EM_HP_ARMORED
-        self.physicalDefence = c.EM_P_DEFENCE_ARMORED
+        self.armor = c.EM_ARMOR_ARMORED
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_ARMORED
         self.magicalDefence = c.EM_M_DEFENCE_ARMORED
         self.hitbox = self.img.get_rect().inflate(-0, -0)
         self.reward = c.EM_REWARD_ARMORED
@@ -204,7 +208,8 @@ class RapidEnemy(Enemy):
         # basic data
         self.speed = c.EM_SPEED_RAPID
         self.hp = c.EM_HP_RAPID
-        self.physicalDefence = c.EM_P_DEFENCE_RAPID
+        self.armor = c.EM_ARMOR_RAPID
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_RAPID
         self.magicalDefence = c.EM_M_DEFENCE_RAPID
         self.hitbox = self.img.get_rect().inflate(-0, -0)
         self.reward = c.EM_REWARD_RAPID
@@ -224,7 +229,8 @@ class BossEnemy(Enemy):
         # basic data
         self.speed = c.EM_SPEED_BOSS
         self.hp = c.EM_HP_BOSS
-        self.physicalDefence = c.EM_P_DEFENCE_BOSS
+        self.armor = c.EM_ARMOR_BOSS
+        self.armorToughness = c.EM_ARMOR_TOUGHNESS_BOSS
         self.magicalDefence = c.EM_M_DEFENCE_BOSS
         self.hitbox = self.img.get_rect().inflate(-0, -0)
         self.reward = c.EM_REWARD_BOSS
