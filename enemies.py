@@ -269,7 +269,7 @@ class BuffManager:
             for j in range(i + 1, length):
                 buff2 = self.buffList[j]
                 if (
-                    type(buff1) == type(buff2)
+                    type(buff1) is type(buff2)
                     and buff1.target == buff2.target
                     and buff2.duration >= buff1.duration
                 ):

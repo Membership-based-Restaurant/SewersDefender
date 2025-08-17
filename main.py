@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os.path as op
 import loadresources
 import time
 import enemies
@@ -16,7 +17,9 @@ class PaManager:
     def __init__(self):
         pygame.init()
         self.ifRunPage = True
-        self.set = settings.Settings()
+        self.set = settings.Settings(self)
+        self.volume = self.set.defaultVolume
+        self.musicPath = self.set.defaultMusicPath
         self.screen = pygame.display.set_mode(self.set.screenSize)
         self.res = loadresources.ImgRes()
         pygame.display.set_icon(self.res.icon)
@@ -24,7 +27,8 @@ class PaManager:
         self.currentPage = self.welcome
         # music
         pygame.mixer.init()
-        pygame.mixer.music.load("bgm/bgm1_by_tttiw.ogg")
+        pygame.mixer.music.set_volume(self.volume)
+        pygame.mixer.music.load(self.musicPath)
         pygame.mixer.music.play(-1)
 
     def set_pages(self):
@@ -52,8 +56,9 @@ class PaManager:
             runTime = endTime - startTime
             if runTime < 1 / 60:
                 time.sleep(1 / 60 - runTime)
-        pygame.quit()
-        sys.exit()
+
+    def quit_program(self):
+        self.set.save_music_set()
 
 
 class Page:
@@ -107,7 +112,45 @@ class Settings(Page):
         self.buttonManager.buttonList.append(
             entities.BackButton(self.pageManager.welcome, (57, 40))
         )
+        self.buttonManager.buttonList.append(
+            entities.MusicChooseButton(self, "bgm/bgm1 by tttiw.ogg", (600, 150))
+        )
+        self.buttonManager.buttonList.append(
+            entities.MusicChooseButton(self, "bgm/Project 4 by tttiw.mp3", (600, 250))
+        )
+        self.buttonManager.buttonList.append(
+            entities.MusicChooseButton(self, "bgm/Project 11 by tttiw.mp3", (600, 350))
+        )
+        self.buttonManager.buttonList.append(entities.VolumeUpButton(self, (910, 760)))
+        self.buttonManager.buttonList.append(
+            entities.VolumeDownButton(self, (1103, 760))
+        )
         pass
+
+    @override
+    def pa_blit(self):
+        self.screen.blit(self.img, self.screen_rect)
+        self.blit_info()
+        self.buttonManager.blit_bu_list()
+
+    def blit_info(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        temptImg1 = font.render(
+            f"CurrentVolume:{round(self.pageManager.volume, 1)}",
+            True,
+            (239, 228, 176),
+        )
+        temptImg2 = font.render(
+            f"CurrentMusic:{op.splitext(op.basename(self.pageManager.musicPath))[0]}",
+            True,
+            (239, 228, 176),
+        )
+        infoImg = pygame.Surface((1200, temptImg1.get_height() * 2 + 10))
+        infoImg.fill((135, 75, 24))
+        pygame.draw.rect(infoImg, (239, 228, 176), infoImg.get_rect(), 1)
+        infoImg.blit(temptImg1, (10, 5 + temptImg1.get_height()))
+        infoImg.blit(temptImg2, (10, 5))
+        self.screen.blit(infoImg, (0, 658))
 
 
 class Select(Page):
@@ -138,9 +181,9 @@ class ConcludeWin(Page):
             entities.GameRestartButton(self.pageManager.game, (600, 400))
         )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.select, (600, 500))
+            entities.BackButton(self.pageManager.select, (600, 760))
         )
-        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 600)))
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 760)))
         pass
 
 
