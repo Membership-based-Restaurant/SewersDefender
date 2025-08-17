@@ -290,6 +290,18 @@ class BackButton(PageChangeButton):
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
 
+class SettingsButton(PageChangeButton):
+    @override
+    def et_set(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        wordImg = font.render("Settings", True, (239, 228, 176))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+
 class MapChooseButton(PageChangeButton):
     def __init__(self, mapPath, destPage, pos: tuple):
         self.pageManager = destPage.pageManager

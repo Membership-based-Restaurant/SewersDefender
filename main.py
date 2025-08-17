@@ -34,12 +34,14 @@ class PaManager:
         self.concludeWin = ConcludeWin(self.screen, self.res, self)
         self.concludeLose = ConcludeLose(self.screen, self.res, self)
         self.game = Game(self.screen, self.res, self)
+        self.settings = Settings(self.screen, self.res, self)
         self.welcome.pa_set()
         self.select.pa_set()
         self.pause.pa_set()
         self.concludeWin.pa_set()
         self.concludeLose.pa_set()
         self.game.pa_set()
+        self.settings.pa_set()
 
     def manage_pages(self):
         while self.ifRunPage:
@@ -91,7 +93,20 @@ class Welcome(Page):
         self.buttonManager.buttonList.append(
             entities.EnterButton(self.pageManager.select, (600, 400))
         )
-        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 500)))
+        self.buttonManager.buttonList.append(
+            entities.SettingsButton(self.pageManager.settings, (600, 500))
+        )
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 600)))
+        pass
+
+
+class Settings(Page):
+    @override
+    def pa_set(self):
+        self.img = pygame.image.load("resources/bkse.png").convert_alpha()
+        self.buttonManager.buttonList.append(
+            entities.BackButton(self.pageManager.welcome, (57, 40))
+        )
         pass
 
 
