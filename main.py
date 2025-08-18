@@ -116,10 +116,10 @@ class Settings(Page):
             entities.MusicChooseButton(self, "bgm/bgm1 by tttiw.ogg", (600, 150))
         )
         self.buttonManager.buttonList.append(
-            entities.MusicChooseButton(self, "bgm/Project 4 by tttiw.mp3", (600, 250))
+            entities.MusicChooseButton(self, "bgm/bgm2 by tttiw.ogg", (600, 250))
         )
         self.buttonManager.buttonList.append(
-            entities.MusicChooseButton(self, "bgm/Project 11 by tttiw.mp3", (600, 350))
+            entities.MusicChooseButton(self, "bgm/bgm3 by tttiw.ogg", (600, 350))
         )
         self.buttonManager.buttonList.append(entities.VolumeUpButton(self, (910, 760)))
         self.buttonManager.buttonList.append(
