@@ -5,7 +5,12 @@ import constants as c
 from numpy import arctan2, pi, log
 from random import randint
 from math import cos, floor, sin, dist
-from typing import override
+from typing import TYPE_CHECKING, Literal, TypeAlias, overload, override
+
+Pos: TypeAlias = tuple[float, float]
+
+if TYPE_CHECKING:
+    from enemies import Enemy
 
 
 class AmManage:
@@ -13,13 +18,47 @@ class AmManage:
         self.game = game
         self.ammoList: list[Ammo] = []
 
+    @overload
+    def create_ammo(
+        self,
+        ammo_type: Literal[
+            c.AmmoType.ARROW,
+            c.AmmoType.BEAM,
+            c.AmmoType.CANNONBALL,
+            c.AmmoType.BULLET,
+            c.AmmoType.BIGCANNONBALL,
+            c.AmmoType.GRANDBEAM,
+            c.AmmoType.MAGICBALL,
+            c.AmmoType.HOLYWATER,
+        ],
+        startPos: Pos,
+        targetPos: Pos,
+        target: None = None,
+    ) -> None: ...
+
+    @overload
+    def create_ammo(
+        self,
+        ammo_type: Literal[c.AmmoType.MISSILE],
+        startPos: Pos,
+        targetPos: None = None,
+        target: "Enemy" = ...,  # required for MISSILE
+    ) -> None: ...
+
     def create_ammo(
         self,
         ammo_type: c.AmmoType,
-        startPos: tuple[float, float],
-        targetPos: tuple[float, float] = None,
-        target=None,
+        startPos: Pos,
+        targetPos: Pos | None = None,
+        target: Enemy | None = None,
     ) -> None:
+        if ammo_type == c.AmmoType.MISSILE:
+            assert target is not None, "Missile ammo requires a target Enemy"
+            self.ammoList.append(Missile(startPos, target, self.game))
+            return
+
+        assert targetPos is not None, "Non-missile ammo requires a targetPos coordinate"
+
         if ammo_type == c.AmmoType.ARROW:
             self.ammoList.append(Arrow(startPos, targetPos, self.game))
         elif ammo_type == c.AmmoType.BEAM:
@@ -30,8 +69,6 @@ class AmManage:
             self.ammoList.append(Bullet(startPos, targetPos, self.game))
         elif ammo_type == c.AmmoType.BIGCANNONBALL:
             self.ammoList.append(BigCannnonball(startPos, targetPos, self.game))
-        elif ammo_type == c.AmmoType.MISSILE:
-            self.ammoList.append(Missile(startPos, target, self.game))
         elif ammo_type == c.AmmoType.GRANDBEAM:
             self.ammoList.append(GrandBeam(startPos, targetPos, self.game))
         elif ammo_type == c.AmmoType.MAGICBALL:
@@ -62,12 +99,12 @@ class AmManage:
 
 
 class Ammo:
-    def __init__(self, startPos: tuple, targetPos: tuple, game):
+    def __init__(self, startPos: Pos, targetPos: Pos, game):
         self.game = game
         self.screen: pygame.Surface = self.game.screen
         self.screen_rect = self.screen.get_rect
-        self.pos = startPos
-        self.targetPos = targetPos
+        self.pos: Pos = startPos
+        self.targetPos: Pos = targetPos
         self.am_set()
         self.am_set_angel()
 
@@ -76,17 +113,17 @@ class Ammo:
         self.damage = c.AM_DAMAGE_D  # example
         self.speed = c.AM_SPEED_D  # example
 
-    def am_set_angel(self):
+    def am_set_angel(self) -> None:
         x = self.targetPos[0] - self.pos[0]
         y = self.targetPos[1] - self.pos[1]
         self.angel = float(arctan2(y, x))
 
-    def am_move(self):
+    def am_move(self) -> None:
         x = self.pos[0] + cos(self.angel) * self.speed
         y = self.pos[1] + sin(self.angel) * self.speed
         self.pos = (x, y)
 
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
                 reduction = 0.04 * (
@@ -104,13 +141,13 @@ class Ammo:
                     )
                 break
 
-    def am_blit(self):
+    def am_blit(self) -> None:
         rotatedImg = pygame.transform.rotate(self.img, -self.angel / pi * 180)
         rotatedImg_rect = rotatedImg.get_rect()
-        rotatedImg_rect.center = self.pos
+        rotatedImg_rect.center = (int(self.pos[0]), int(self.pos[1]))
         self.screen.blit(rotatedImg, rotatedImg_rect)
 
-    def get_word_size(self, num: int):
+    def get_word_size(self, num: int) -> int:
         size = int(4 * log(8 * num))
         if size < 14:
             size = 14
@@ -135,13 +172,13 @@ class Bullet(Ammo):
 
 class Beam(Ammo):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.BEAM)
         self.damage = c.AM_DAMAGE_BEAM
         self.speed = c.AM_SPEED_BEAM
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
                 damage = 0
@@ -161,13 +198,13 @@ class Beam(Ammo):
 
 class MagicBall(Ammo):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.MAGICBALL)
         self.damage = c.AM_DAMAGE_MAGICBALL
         self.speed = c.AM_SPEED_MAGICBALL
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
                 damage = 0
@@ -190,13 +227,13 @@ class MagicBall(Ammo):
 
 class HolyWater(Ammo):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.HOLYWATER)
         self.damage = c.AM_DAMAGE_HOLYWATER
         self.speed = c.AM_SPEED_HOLYWATER
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
                 damage = 0
@@ -219,14 +256,14 @@ class HolyWater(Ammo):
 
 class GrandBeam(Ammo):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.GRANDBEAM)
         self.damage = c.AM_DAMAGE_GRANDBEAM
         self.speed = c.AM_SPEED_GRANDBEAM
         self.range = c.AM_RANGE_GRANDBEAM
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
                 damage = 0
@@ -248,14 +285,14 @@ class GrandBeam(Ammo):
 
 class Cannonball(Ammo):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_CANNONBALL
         self.speed = c.AM_SPEED_CANNONBALL
         self.range = c.AM_RANGE_CANNONBALL
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
                 reduction = 0.04 * (
@@ -273,17 +310,18 @@ class Cannonball(Ammo):
                     )
 
     @override
-    def am_blit(self):
+    def am_blit(self) -> None:
         rotatedImg = pygame.transform.rotate(self.img, -self.angel / pi * 180)
         rotatedImg_rect = rotatedImg.get_rect()
-        rotatedImg_rect.center = self.pos
+        rotatedImg_rect.center = (int(self.pos[0]), int(self.pos[1]))
+
         # pygame.draw.circle(self.screen, (255, 0, 0, 128), self.targetPos, self.range, 1)
         self.screen.blit(rotatedImg, rotatedImg_rect)
 
 
 class BigCannnonball(Cannonball):
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_BIGCANNONBALL
         self.speed = c.AM_SPEED_BIGCANNONBALL
@@ -292,24 +330,24 @@ class BigCannnonball(Cannonball):
 
 class Missile(Ammo):
     @override
-    def __init__(self, startPos: tuple, target, game):
+    def __init__(self, startPos: Pos, target: "Enemy", game):
         self.game = game
         self.screen: pygame.Surface = self.game.screen
         self.screen_rect = self.screen.get_rect
-        self.pos = startPos
-        self.target = target
-        self.targetPos = self.target.pos
+        self.pos: Pos = startPos
+        self.target: "Enemy" = target
+        self.targetPos: Pos = self.target.pos
         self.am_set()
         self.angel = 3 / 2 * pi
 
     @override
-    def am_set(self):
+    def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.MISSILE)
         self.damage = c.AM_DAMAGE_MISSILE
         self.speed = c.AM_SPEED_MISSILE
         self.range = c.AM_RANGE_MISSILE
 
-    def am_new_angel(self):
+    def am_new_angel(self) -> None:
         if (
             self.game.enemyManager.enemyList
             and self.target not in self.game.enemyManager.enemyList
@@ -331,7 +369,7 @@ class Missile(Ammo):
         else:
             self.angel += pi / 12
 
-    def am_search(self):
+    def am_search(self) -> None:
         ifFoundTarget = False
         for enemy in self.game.enemyManager.enemyList:
             if ifFoundTarget:
@@ -348,14 +386,14 @@ class Missile(Ammo):
                 ifFoundTarget = True
 
     @override
-    def am_move(self):
+    def am_move(self) -> None:
         self.am_new_angel()
         x = self.pos[0] + cos(self.angel) * self.speed
         y = self.pos[1] + sin(self.angel) * self.speed
         self.pos = (x, y)
 
     @override
-    def am_conclude(self):
+    def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
                 reduction = 0.04 * (
