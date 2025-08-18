@@ -269,7 +269,7 @@ class BuffManager:
             for j in range(i + 1, length):
                 buff2 = self.buffList[j]
                 if (
-                    buff1.type == buff2.type
+                    type(buff1) is type(buff2)
                     and buff1.target == buff2.target
                     and buff2.duration >= buff1.duration
                 ):
@@ -321,7 +321,6 @@ class Buff:
 
     def buff_set(self):  # example
         self.img = self.game.res.get_img(None)
-        self.type = c.BuffType.DIZZY
         pass
 
     def buff_work(self):  # example
@@ -350,7 +349,6 @@ class Toxicosis(Buff):
         self.interval = 30
         self.c_interval = self.interval
         self.damage = c.BUFF_DAMAGE_TOXICOSIS
-        self.type = c.BuffType.TOXICOSIS
 
     @override
     def buff_work(self):
@@ -374,7 +372,6 @@ class ArmorReduce(Buff):
         self.img = self.game.res.get_img(c.BuffType.ARMORREDUCE)
         self.c_armor = self.target.armor
         self.target.armor = 0
-        self.type = c.BuffType.ARMORREDUCE
 
     @override
     def buff_dissolve(self):
@@ -387,7 +384,6 @@ class Dizzy(Buff):
         self.img = self.game.res.get_img(c.BuffType.DIZZY)
         self.c_speed = self.target.speed
         self.target.speed = round(self.c_speed * 0.2)
-        self.type = c.BuffType.DIZZY
 
     @override
     def buff_dissolve(self):

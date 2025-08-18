@@ -1,6 +1,7 @@
 import sys
 import pygame
 import towers
+import os.path as op
 import constants as c
 from typing import override
 
@@ -131,6 +132,81 @@ class TaskStartButton(Button):
         self.page.ifExecuteTasks = True
 
 
+class VolumeDownButton(Button):
+    @override
+    def et_set(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        wordImg = font.render("Volume -", True, (239, 228, 176))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+    @override
+    def bu_work(self):
+        if self.page.pageManager.volume >= 0.1:
+            self.page.pageManager.volume -= 0.1
+        else:
+            self.page.pageManager.volume = 0
+        pygame.mixer.music.set_volume(self.page.pageManager.volume)
+        # pygame.mixer.music.rewind()
+
+
+class VolumeUpButton(Button):
+    @override
+    def et_set(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        wordImg = font.render("Volume+", True, (239, 228, 176))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+    @override
+    def bu_work(self):
+        if self.page.pageManager.volume <= 0.9:
+            self.page.pageManager.volume += 0.1
+        else:
+            self.page.pageManager.volume = 1
+        pygame.mixer.music.set_volume(self.page.pageManager.volume)
+        # pygame.mixer.music.rewind()
+
+
+class MusicChooseButton(Button):
+    @override
+    def __init__(self, page, musicPath: str, pos: tuple):
+        self.page = page
+        self.pos = pos
+        self.path = musicPath
+        self.screen = self.page.pageManager.screen
+        self.ifLiving = True
+        self.et_set()
+        self.img_rect = self.img.get_rect()
+        self.img_rect.center = self.pos
+        self.hitbox.center = self.pos
+
+    @override
+    def et_set(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        wordImg = font.render(
+            op.splitext(op.basename(self.path))[0], True, (239, 228, 176)
+        )
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+    @override
+    def bu_work(self):
+        pygame.mixer.stop()
+        pygame.mixer.music.load(self.path)
+        pygame.mixer.music.play(-1)
+        self.page.pageManager.musicPath = self.path
+
+
 class ExitButton(Button):
     @override
     def et_set(self):
@@ -144,6 +220,7 @@ class ExitButton(Button):
 
     @override
     def bu_work(self):
+        self.page.pageManager.quit_program()
         pygame.quit()
         sys.exit()
 
@@ -290,7 +367,20 @@ class BackButton(PageChangeButton):
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
 
+class SettingsButton(PageChangeButton):
+    @override
+    def et_set(self):
+        font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
+        wordImg = font.render("Settings", True, (239, 228, 176))
+        self.img = pygame.Surface((wordImg.get_width() + 20, wordImg.get_height() + 10))
+        self.img.fill((135, 75, 24))
+        pygame.draw.rect(self.img, (239, 228, 176), self.img.get_rect(), 1)
+        self.img.blit(wordImg, (10, 5))
+        self.hitbox = self.img.get_rect().inflate(-5, -5)
+
+
 class MapChooseButton(PageChangeButton):
+    @override
     def __init__(self, mapPath, destPage, pos: tuple):
         self.pageManager = destPage.pageManager
         self.pos = pos
