@@ -181,9 +181,9 @@ class ConcludeWin(Page):
             entities.GameRestartButton(self.pageManager.game, (600, 400))
         )
         self.buttonManager.buttonList.append(
-            entities.BackButton(self.pageManager.select, (600, 760))
+            entities.BackButton(self.pageManager.select, (600, 500))
         )
-        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 760)))
+        self.buttonManager.buttonList.append(entities.ExitButton(self, (600, 600)))
         pass
 
 
