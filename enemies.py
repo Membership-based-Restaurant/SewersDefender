@@ -87,8 +87,8 @@ class Enemy:
         self.speed = c.EM_SPEED_D
         self.hp = c.EM_HP_D
         self.armor = c.EM_ARMOR_D
-        self.armorToughness = c.EM_ARMOR_TOUGHNESS_D
-        self.magicalDefence = c.EM_M_DEFENCE_D
+        self.armor_toughness = c.EM_ARMOR_TOUGHNESS_D
+        self.magical_defence = c.EM_M_DEFENCE_D
         self.hitbox = self.img.get_rect().inflate(-5, -5)
         self.reward = c.EM_REWARD_COMMON
         # attack
