@@ -2,7 +2,6 @@ import pygame
 import sys
 import os.path as op
 import loadresources
-import time
 import enemies
 import towers
 import ammunition
@@ -10,6 +9,7 @@ import maps
 import entities
 import constants as c
 import settings
+import asyncio
 from typing import override
 
 
@@ -48,14 +48,7 @@ class PaManager:
         self.settings.pa_set()
 
     def manage_pages(self):
-        while self.ifRunPage:
-            startTime = time.time()
-            self.currentPage.pa_run()
-            pygame.display.flip()
-            endTime = time.time()
-            runTime = endTime - startTime
-            if runTime < 1 / 60:
-                time.sleep(1 / 60 - runTime)
+        self.currentPage.pa_run()
 
     def quit_program(self):
         self.set.save_music_set()
@@ -341,6 +334,16 @@ class Game(Page):
         self.messageManager.blit_me_list()
 
 
-if __name__ == "__main__":
-    p = PaManager()
-    p.manage_pages()
+p = PaManager()
+clock = pygame.time.Clock()
+
+
+async def main():
+    while p.ifRunPage:
+        p.manage_pages()
+        pygame.display.flip()
+        clock.tick(60)
+        await asyncio.sleep(0)
+
+
+asyncio.run(main())
