@@ -4,3 +4,4 @@ __pycache__/
 bgm/settings.json
 build/
 pyodide_demo/
+.venv/
