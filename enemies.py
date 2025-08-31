@@ -2,7 +2,6 @@ import pygame
 import constants as c
 from random import randint
 from math import log
-from typing import override
 
 
 class EnManager:
@@ -140,7 +139,6 @@ class Enemy:
 
 
 class TestEnemy(Enemy):
-    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.TEST)
@@ -155,13 +153,11 @@ class TestEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_D
 
-    @override
     def en_skill(self):
         pass
 
 
 class CommonEnemy(Enemy):
-    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.COMMON)
@@ -176,13 +172,11 @@ class CommonEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_COMMON
 
-    @override
     def en_skill(self):
         pass
 
 
 class ArmoredEnemy(Enemy):
-    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.ARMORED)
@@ -197,13 +191,11 @@ class ArmoredEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_ARMORED
 
-    @override
     def en_skill(self):
         pass
 
 
 class RapidEnemy(Enemy):
-    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.RAPID)
@@ -218,13 +210,11 @@ class RapidEnemy(Enemy):
         # attack
         self.damage = c.EM_DAMAGE_RAPID
 
-    @override
     def en_skill(self):
         pass
 
 
 class BossEnemy(Enemy):
-    @override
     def en_set(self):
         # img
         self.img = self.game.res.get_img(c.EnemyType.BOSS)
@@ -241,7 +231,6 @@ class BossEnemy(Enemy):
         self.skillInterval = c.EM_INTERVAL_BOSS
         self.c_skillInterval = c.EM_INTERVAL_BOSS
 
-    @override
     def en_skill(self):
         if self.skillInterval > 0:
             self.skillInterval -= 1
@@ -343,14 +332,12 @@ class Buff:
 
 
 class Toxicosis(Buff):
-    @override
     def buff_set(self):
         self.img = self.game.res.get_img(c.BuffType.TOXICOSIS)
         self.interval = 30
         self.c_interval = self.interval
         self.damage = c.BUFF_DAMAGE_TOXICOSIS
 
-    @override
     def buff_work(self):
         if self.interval == 0:
             self.interval = self.c_interval
@@ -367,24 +354,20 @@ class Toxicosis(Buff):
 
 
 class ArmorReduce(Buff):
-    @override
     def buff_set(self):
         self.img = self.game.res.get_img(c.BuffType.ARMORREDUCE)
         self.c_armor = self.target.armor
         self.target.armor = 0
 
-    @override
     def buff_dissolve(self):
         self.target.armor = self.c_armor
 
 
 class Dizzy(Buff):
-    @override
     def buff_set(self):
         self.img = self.game.res.get_img(c.BuffType.DIZZY)
         self.c_speed = self.target.speed
         self.target.speed = round(self.c_speed * 0.2)
 
-    @override
     def buff_dissolve(self):
         self.target.speed = self.c_speed

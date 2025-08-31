@@ -3,7 +3,6 @@ import pygame
 import towers
 import os.path as op
 import constants as c
-from typing import override
 
 
 class Entity:
@@ -27,7 +26,6 @@ class Entity:
 
 
 class Finish(Entity):
-    @override
     def et_set(self):  # example
         self.img = self.page.res.get_img(c.EntityType.FINISH)  # example
         self.hitbox = self.img.get_rect().inflate(-10, -10)  # example
@@ -116,7 +114,6 @@ class Button(Entity):
 
 
 class TaskStartButton(Button):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Start", True, (239, 228, 176))
@@ -126,14 +123,12 @@ class TaskStartButton(Button):
         self.img.blit(wordImg, (10, 10))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         self.ifLiving = False
         self.page.ifExecuteTasks = True
 
 
 class VolumeDownButton(Button):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Volume -", True, (239, 228, 176))
@@ -143,7 +138,6 @@ class VolumeDownButton(Button):
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         if self.page.pageManager.volume >= 0.1:
             self.page.pageManager.volume -= 0.1
@@ -154,7 +148,6 @@ class VolumeDownButton(Button):
 
 
 class VolumeUpButton(Button):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Volume+", True, (239, 228, 176))
@@ -164,7 +157,6 @@ class VolumeUpButton(Button):
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         if self.page.pageManager.volume <= 0.9:
             self.page.pageManager.volume += 0.1
@@ -175,7 +167,6 @@ class VolumeUpButton(Button):
 
 
 class MusicChooseButton(Button):
-    @override
     def __init__(self, page, musicPath: str, pos: tuple):
         self.page = page
         self.pos = pos
@@ -187,7 +178,6 @@ class MusicChooseButton(Button):
         self.img_rect.center = self.pos
         self.hitbox.center = self.pos
 
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render(
@@ -199,7 +189,6 @@ class MusicChooseButton(Button):
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         pygame.mixer.stop()
         pygame.mixer.music.load(self.path)
@@ -208,7 +197,6 @@ class MusicChooseButton(Button):
 
 
 class ExitButton(Button):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Exit", True, (239, 228, 176))
@@ -218,7 +206,6 @@ class ExitButton(Button):
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         self.page.pageManager.quit_program()
         pygame.quit()
@@ -238,13 +225,11 @@ class TowerDeleteButton(Button):
         self.tower = tower
         self.type = tower.towerType
 
-    @override
     def et_set(self):
         temptImg = self.game.res.get_img(c.ButtonType.TO_DELETE)
         self.img = pygame.transform.scale(temptImg, (c.UP_WIDTH, c.UP_WIDTH))
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
-    @override
     def bu_work(self):
         self.game.towerManager.delete_tower(self.tower)
 
@@ -266,7 +251,6 @@ class UpgradeButton(Button):
         self.hitbox.center = self.pos
         self.tower = tower
 
-    @override
     def et_set(self):
         temptImg = self.game.res.get_img(towers.towerUpgradeIndex[self.type][self.num])
         self.img = pygame.transform.scale(
@@ -274,7 +258,6 @@ class UpgradeButton(Button):
         )
         self.hitbox = self.img.get_rect().inflate(0, 0)
 
-    @override
     def bu_work(self):
         self.game.towerManager.upgrade_tower(self.tower, self.num)
 
@@ -291,17 +274,14 @@ class PageChangeButton(Button):
         self.hitbox.center = self.pos
         self.destPage = destPage
 
-    @override
     def et_set(self):
         pass
 
-    @override
     def bu_work(self):
         self.pageManager.currentPage = self.destPage
 
 
 class EnterButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Game", True, (239, 228, 176))
@@ -313,7 +293,6 @@ class EnterButton(PageChangeButton):
 
 
 class GamePauseButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Pause", True, (239, 228, 176))
@@ -325,7 +304,6 @@ class GamePauseButton(PageChangeButton):
 
 
 class GameRestartButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Replay", True, (239, 228, 176))
@@ -335,7 +313,6 @@ class GameRestartButton(PageChangeButton):
         self.img.blit(wordImg, (10, 5))
         self.hitbox = self.img.get_rect().inflate(-5, -5)
 
-    @override
     def bu_work(self):
         self.destPage.set_game_resources()
         self.destPage.buttonManager.clear_bu_list()
@@ -344,7 +321,6 @@ class GameRestartButton(PageChangeButton):
 
 
 class GameContinueButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Continue", True, (239, 228, 176))
@@ -356,7 +332,6 @@ class GameContinueButton(PageChangeButton):
 
 
 class BackButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Back", True, (239, 228, 176))
@@ -368,7 +343,6 @@ class BackButton(PageChangeButton):
 
 
 class SettingsButton(PageChangeButton):
-    @override
     def et_set(self):
         font = pygame.font.Font("resources/FanwoodText-Regular.ttf", c.WORD_SIZE)
         wordImg = font.render("Settings", True, (239, 228, 176))
@@ -380,7 +354,6 @@ class SettingsButton(PageChangeButton):
 
 
 class MapChooseButton(PageChangeButton):
-    @override
     def __init__(self, mapPath, destPage, pos: tuple):
         self.pageManager = destPage.pageManager
         self.pos = pos
@@ -395,11 +368,9 @@ class MapChooseButton(PageChangeButton):
         self.destPage = destPage
         self.path = mapPath
 
-    @override
     def et_set(self):
         pass
 
-    @override
     def bu_work(self):
         self.destPage.mapPath = self.path
         self.destPage.set_game_resources()

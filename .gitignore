@@ -2,6 +2,5 @@ __pycache__/
 .vscode/
 .DS_Store
 bgm/settings.json
-build/
 pyodide_demo/
-.venv/
+pyproject.toml

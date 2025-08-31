@@ -3,7 +3,7 @@ from __future__ import annotations
 import pygame
 import entities
 from math import dist
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING
 import constants as c
 
 if TYPE_CHECKING:
@@ -262,7 +262,6 @@ class Tower:
 
 
 class Base(Tower):
-    @override
     def to_set(self) -> None:
         # basic data
         self.prepInterval = c.TO_INTERVAL_D
@@ -273,17 +272,14 @@ class Base(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_search(self, enemyList: list[Enemy]) -> None:
         pass
 
-    @override
     def to_attack(self) -> None:
         pass
 
 
 class TestTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_D
@@ -297,7 +293,6 @@ class TestTower(Tower):
 
 
 class ArcherTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_ARCHER
@@ -311,7 +306,6 @@ class ArcherTower(Tower):
 
 
 class MarksmanTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_MARKSMAN
@@ -325,7 +319,6 @@ class MarksmanTower(Tower):
 
 
 class SniperTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_SNIPER
@@ -337,7 +330,6 @@ class SniperTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(-0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -353,7 +345,6 @@ class SniperTower(Tower):
 
 
 class CannonTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_CANNON
@@ -365,7 +356,6 @@ class CannonTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -381,7 +371,6 @@ class CannonTower(Tower):
 
 
 class BigCannonTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_BIGCANNON
@@ -393,7 +382,6 @@ class BigCannonTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -409,7 +397,6 @@ class BigCannonTower(Tower):
 
 
 class LauncherTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_LAUNCHER
@@ -421,7 +408,6 @@ class LauncherTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -430,7 +416,6 @@ class LauncherTower(Tower):
 
 
 class WizardTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_WIZARD
@@ -442,7 +427,6 @@ class WizardTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -456,7 +440,6 @@ class WizardTower(Tower):
 
 
 class WitchTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_WITCH
@@ -468,7 +451,6 @@ class WitchTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -484,7 +466,6 @@ class WitchTower(Tower):
 
 
 class PastorTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_PASTOR
@@ -496,7 +477,6 @@ class PastorTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return
@@ -512,7 +492,6 @@ class PastorTower(Tower):
 
 
 class ArchmageTower(Tower):
-    @override
     def to_set(self) -> None:
         # attack
         self.prepInterval = c.TO_INTERVAL_ARCHMAGE
@@ -524,7 +503,6 @@ class ArchmageTower(Tower):
         self.img = self.game.res.get_img(self.towerType)
         self.hitbox = self.img.get_rect().inflate(0, -30)
 
-    @override
     def to_attack(self) -> None:
         if self.target is None:
             return

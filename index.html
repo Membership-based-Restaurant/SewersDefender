@@ -6,12 +6,21 @@
     <title>Test Web Page</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
   </head>
   <body>
+    <script type="text/javascript">
+      async function main() {
+        let pyodide = await loadPyodide();
+        await pyodide.loadPackage(["pygame-ce"], { checkIntegrity: false });
+
+        canvas = document.getElementById("canvas");
+        pyodide.canvas.setCanvas2D(canvas);
+      }
+    </script>
     <h1 class="page-title">This Page is written to run a test game</h1>
     <canvas id="gameCanvas" width="1200" height="800">
       Your browser does not support the HTML5 canvas tag.
-
     </canvas>
   </body>
 </html>

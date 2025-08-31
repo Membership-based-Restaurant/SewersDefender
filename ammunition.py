@@ -5,7 +5,7 @@ import constants as c
 from numpy import arctan2, pi, log
 from random import randint
 from math import cos, floor, sin, dist
-from typing import TYPE_CHECKING, Literal, TypeAlias, overload, override
+from typing import TYPE_CHECKING, Literal, TypeAlias, overload
 
 Pos: TypeAlias = tuple[float, float]
 
@@ -155,7 +155,6 @@ class Ammo:
 
 
 class Arrow(Ammo):
-    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.ARROW)
         self.damage = c.AM_DAMAGE_ARROW
@@ -163,7 +162,6 @@ class Arrow(Ammo):
 
 
 class Bullet(Ammo):
-    @override
     def am_set(self):
         self.img = self.game.res.get_img(c.AmmoType.BULLET)
         self.damage = c.AM_DAMAGE_BULLET
@@ -171,13 +169,11 @@ class Bullet(Ammo):
 
 
 class Beam(Ammo):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.BEAM)
         self.damage = c.AM_DAMAGE_BEAM
         self.speed = c.AM_SPEED_BEAM
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
@@ -197,13 +193,11 @@ class Beam(Ammo):
 
 
 class MagicBall(Ammo):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.MAGICBALL)
         self.damage = c.AM_DAMAGE_MAGICBALL
         self.speed = c.AM_SPEED_MAGICBALL
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
@@ -226,13 +220,11 @@ class MagicBall(Ammo):
 
 
 class HolyWater(Ammo):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.HOLYWATER)
         self.damage = c.AM_DAMAGE_HOLYWATER
         self.speed = c.AM_SPEED_HOLYWATER
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if enemy.hitbox.collidepoint(self.targetPos):
@@ -255,14 +247,12 @@ class HolyWater(Ammo):
 
 
 class GrandBeam(Ammo):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.GRANDBEAM)
         self.damage = c.AM_DAMAGE_GRANDBEAM
         self.speed = c.AM_SPEED_GRANDBEAM
         self.range = c.AM_RANGE_GRANDBEAM
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
@@ -284,14 +274,12 @@ class GrandBeam(Ammo):
 
 
 class Cannonball(Ammo):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_CANNONBALL
         self.speed = c.AM_SPEED_CANNONBALL
         self.range = c.AM_RANGE_CANNONBALL
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
@@ -309,7 +297,6 @@ class Cannonball(Ammo):
                         self.get_word_size(damage),
                     )
 
-    @override
     def am_blit(self) -> None:
         rotatedImg = pygame.transform.rotate(self.img, -self.angel / pi * 180)
         rotatedImg_rect = rotatedImg.get_rect()
@@ -320,7 +307,6 @@ class Cannonball(Ammo):
 
 
 class BigCannnonball(Cannonball):
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.CANNONBALL)
         self.damage = c.AM_DAMAGE_BIGCANNONBALL
@@ -329,7 +315,6 @@ class BigCannnonball(Cannonball):
 
 
 class Missile(Ammo):
-    @override
     def __init__(self, startPos: Pos, target: "Enemy", game):
         self.game = game
         self.screen: pygame.Surface = self.game.screen
@@ -340,7 +325,6 @@ class Missile(Ammo):
         self.am_set()
         self.angel = 3 / 2 * pi
 
-    @override
     def am_set(self) -> None:
         self.img = self.game.res.get_img(c.AmmoType.MISSILE)
         self.damage = c.AM_DAMAGE_MISSILE
@@ -385,14 +369,12 @@ class Missile(Ammo):
                 self.target = enemy
                 ifFoundTarget = True
 
-    @override
     def am_move(self) -> None:
         self.am_new_angel()
         x = self.pos[0] + cos(self.angel) * self.speed
         y = self.pos[1] + sin(self.angel) * self.speed
         self.pos = (x, y)
 
-    @override
     def am_conclude(self) -> None:
         for enemy in self.game.enemyManager.enemyList:
             if dist(enemy.pos, self.targetPos) < self.range:
