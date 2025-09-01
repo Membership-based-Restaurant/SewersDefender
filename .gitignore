@@ -1,9 +1,6 @@
 __pycache__/
 .vscode/
 .DS_Store
-game/bgm/settings.json
-pyodide_demo/
-pyproject.toml
-gen_game_map_pngs.py
-all_pngs.json
-all_pngs.txt
+web_assets/bgm/settings.json
+zip_web_assets.py
+web_assets/
