@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--zip -r -q web_assets.zip resources bgm game_maps main.py loadresources.py enemies.py towers.py ammunition.py maps.py
+entities.py constants.py settings.py friends.py-->
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="images/icon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sewers Defender</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+      #controls {
+        padding: 10px;
+      }
+      #canvas {
+        display: block;
+        margin: 0 auto;
+        background: #111;
+        border: 1px solid #333;
+        width: 1200px;
+        height: 800px;
+      }
+      #log {
+        color: #333;
+        white-space: pre-wrap;
+        padding: 10px;
+        margin: 25px;
+      }
+      h1 {
+        display: block;
+        margin: 10px auto 5px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+      }
+      button {
+        display: block;
+        background: #111;
+        margin: 0 auto;
+        color: #fff;
+        border: 1px solid #333;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #222;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+  </head>
+  <body>
+    <h1>Sewers Defender</h1>
+    <div id="controls">
+      <button id="startBtn">Load game</button>
+    </div>
+    <canvas id="canvas" width="1200" height="800"></canvas>
+    <div id="log"></div>
+    <script>
+      const logEl = document.getElementById("log");
+      function log(msg) {
+        console.log(msg);
+        logEl.textContent += msg + "\n";
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      let started = false;
+      async function boot() {
+        if (started) return;
+        started = true;
+        try {
+          log("Loading Pyodide");
+          const pyodide = await loadPyodide();
+          log("Loading numpy");
+          await pyodide.loadPackage(["numpy"]);
+          log("Loading pygame-ce");
+          await pyodide.loadPackage(["pygame-ce"], {
+            checkIntegrity: false,
+          });
+          const canvas = document.getElementById("canvas");
+          pyodide.canvas.setCanvas2D(canvas);
+          log("Loading assets");
+          const resp = await fetch("web_assets.zip");
+          if (!resp.ok) throw new Error("Failed to fetch web_assets.zip");
+          const buf = await resp.arrayBuffer();
+          pyodide.unpackArchive(buf, "zip", { extractDir: "/" });
+          log("Starting game");
+          await pyodide.runPythonAsync(`
+            import os, sys, runpy, asyncio
+            sys.argv = ['main.py']
+            os.chdir('/')
+            if '/' not in sys.path: sys.path.insert(0, '/')
+
+            import asyncio as _a
+            _orig_run = _a.run
+            def _shim_run(coro):
+                try:
+                    loop = _a.get_event_loop()
+                    if loop.is_running():
+                        return _a.create_task(coro)
+                except Exception:
+                    pass
+                return _orig_run(coro)
+            _a.run = _shim_run
+
+            runpy.run_path('main.py', run_name='__main__')
+            `);
+        } catch (err) {
+          console.error(err);
+          log("Error: " + (err?.message || String(err)));
+        }
+      }
+      document.getElementById("startBtn").addEventListener("click", boot);
+    </script>
+  </body>
+</html>
